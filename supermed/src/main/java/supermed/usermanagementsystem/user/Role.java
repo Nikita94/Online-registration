@@ -1,4 +1,4 @@
-package usermanagementsystem.user;
+package supermed.usermanagementsystem.user;
 
 /**
  * Created by Alexander on 23.11.2016.

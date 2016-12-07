@@ -1,15 +1,21 @@
-package usermanagementsystem.user;
+package supermed.usermanagementsystem.user;
 
 
 /**
  * Created by Alexander on 22.11.2016.
  */
+
 public class UserData {
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private String passportData;
+
     private String login;
+
+    private String firstName;
+
+    private String middleName;
+
+    private String lastName;
+
+    private String passportData;
 
     private UserData(String login, String firstName, String middleName, String lastName, String
             passportData) {
@@ -21,6 +27,10 @@ public class UserData {
     }
 
     private UserData() {
+    }
+
+    public String getLogin() {
+        return login;
     }
 
     public String getFirstName() {

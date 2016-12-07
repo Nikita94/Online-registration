@@ -10,6 +10,10 @@
             <url>http://download.java.net/maven/2</url>
         </pluginRepository>
     </pluginRepositories>
+    <properties>
+        <jersey2.version>2.19</jersey2.version>
+        <jaxrs.version>2.0.1</jaxrs.version>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -50,6 +54,7 @@
     <groupId>com.supermed</groupId>
     <artifactId>supermed-app</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
 
     <dependencies>
         <dependency>
@@ -85,9 +90,19 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-jdk-http</artifactId>
-            <version>2.24.1</version>
-        </dependency>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>${jersey2.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.jersey.core</groupId>
+        <artifactId>jersey-server</artifactId>
+        <version>${jersey2.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.jersey.core</groupId>
+        <artifactId>jersey-client</artifactId>
+        <version>${jersey2.version}</version>
+    </dependency>
     </dependencies>
 
 </project>

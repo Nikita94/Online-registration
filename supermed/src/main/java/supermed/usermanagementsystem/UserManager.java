@@ -15,41 +15,41 @@ public class UserManager extends Application {
 
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public boolean logIn(String login, String password) {
-        return false;
-    }
+    //@POST
+    //@Consumes(MediaType.APPLICATION_JSON)
+    //public boolean logIn(String login, String password) {
+    //    return false;
+    //}
+//
+    //@POST
+    //@Consumes(MediaType.APPLICATION_JSON)
+    //public boolean signIn(User user) {
+    //    return false;
+    //}
+//
+    //@POST
+    //@Consumes(MediaType.APPLICATION_JSON)
+    //public boolean updateUser(User user) {
+    //    return false;
+    //}
+//
+    //@DELETE
+    //@Path("/{id}")
+    //public boolean deleteUser(User user) {
+    //    return false;
+    //}
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public boolean signIn(User user) {
-        return false;
-    }
+    //@GET
+    //@Path("/{id}")
+    //public User getUser(String login) {
+        //return null;
+    //}
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public boolean updateUser(User user) {
-        return false;
-    }
-
-    @DELETE
-    @Path("/{id}")
-    public boolean deleteUser(User user) {
-        return false;
-    }
-
-    @GET
-    @Path("/{id}")
-    public User getUser(String login) {
-        return null;
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public boolean crateUser(User user, String password) {
-        return false;
-    }
+   // @POST
+   // @Consumes(MediaType.APPLICATION_JSON)
+   // public boolean crateUser(User user, String password) {
+   //     return false;
+   // }
 
     // This method is called if TEXT_PLAIN is request
     @GET
@@ -67,6 +67,7 @@ public class UserManager extends Application {
 
     // This method is called if HTML is request
     @GET
+    @Path("/hello")
     @Produces(MediaType.TEXT_HTML)
     public String sayHtmlHello() {
         return "<html> " + "<title>" + "Hello Jersey" + "</title>"

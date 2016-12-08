@@ -1,4 +1,4 @@
-package supermed.usermanagementsystem;
+package supermed.usermanagementsystem.impl;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Application;

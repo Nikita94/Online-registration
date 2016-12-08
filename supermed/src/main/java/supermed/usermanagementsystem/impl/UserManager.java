@@ -1,15 +1,26 @@
 package supermed.usermanagementsystem.impl;
 
+import supermed.httpexception.ResourceNotFoundException;
+import supermed.httpexception.ResponseBuilderImpl;
+import supermed.usermanagementsystem.UserService;
+import supermed.usermanagementsystem.user.User;
+
+import javax.naming.NamingException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 /**
  * Created by Alexander on 24.11.2016.
  */
 @Path("/users")
 public class UserManager extends Application {
+
+    protected UserService userService = new UserServiceImpl();
+    private ResponseBuilderImpl responseBuilder = new ResponseBuilderImpl();
+
     public UserManager() {
 
     }
@@ -17,8 +28,12 @@ public class UserManager extends Application {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response logIn(@FormParam("login") String login,
-                          @FormParam("password") String password) {
-        return Response.status(200).entity("User have " + login + " and "+ password).build();
+                          @FormParam("password") String password) throws ResourceNotFoundException, NamingException {
+        User user = userService.logIn(login, password);
+        if (user != null)
+            return responseBuilder.respondWithStatusAndObject(Status.OK, user);
+        else
+            return responseBuilder.respondWithStatusAndObject(Status.NOT_FOUND, "User not found");
     }
 //
     //@POST

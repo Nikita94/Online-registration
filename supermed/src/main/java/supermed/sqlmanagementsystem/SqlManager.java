@@ -1,10 +1,14 @@
 package supermed.sqlmanagementsystem;
 
+
+import java.sql.*;
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
 import supermed.usermanagementsystem.user.UserData;
 
-import java.sql.*;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,26 +24,38 @@ public final class SqlManager {
     private static Connection connection;
     private static Statement statement;
     private static ResultSet resultSet;
+    private static InitialContext initialContext;
+    private static DataSource dataSource;
 
     private SqlManager() {}
 
     private static void openConnection() {
         // opening database connection to MySQL server
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            initialContext = new InitialContext();
+            dataSource = (DataSource) initialContext.lookup("java:comp/env/jdbc/supermed");
+            connection = dataSource.getConnection();
             // getting Statement object to execute query
             statement = connection.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (NamingException e) {
+            e.printStackTrace();
         }
     }
 
-    private static void closeConnection() {
-        try { connection.close(); } catch(SQLException se) { /*can't do anything */ }
-        try { statement.close(); } catch(SQLException se) { /*can't do anything */ }
+    private static void closeConnection() throws SQLException, NamingException {
+        if (resultSet != null)
+            resultSet.close();
+        if (statement != null)
+            statement.close();
+        if (connection != null)
+            connection.close();
+        if (initialContext != null)
+            initialContext.close();
     }
 
-    public static List<User> getUsers() throws SQLException {
+    public static List<User> getUsers() throws SQLException, NamingException {
         openConnection();
         List<User> users = new ArrayList<User>();
         try {
@@ -62,10 +78,15 @@ public final class SqlManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        finally {
-            resultSet.close();
-        }
         closeConnection();
         return users;
+    }
+
+    public static void main(String[] args) throws NamingException {
+        try {
+            System.out.print(getUsers());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

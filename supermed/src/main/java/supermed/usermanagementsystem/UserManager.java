@@ -1,10 +1,9 @@
 package supermed.usermanagementsystem;
 
-import supermed.usermanagementsystem.user.User;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Created by Alexander on 24.11.2016.
@@ -15,11 +14,12 @@ public class UserManager extends Application {
 
     }
 
-    //@POST
-    //@Consumes(MediaType.APPLICATION_JSON)
-    //public boolean logIn(String login, String password) {
-    //    return false;
-    //}
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response logIn(@FormParam("login") String login,
+                          @FormParam("password") String password) {
+        return Response.status(200).entity("User have " + login + " and "+ password).build();
+    }
 //
     //@POST
     //@Consumes(MediaType.APPLICATION_JSON)

@@ -26,13 +26,16 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
   `usr_id` int(11) NOT NULL,
-  `name` char(40) NOT NULL,
-  `s_name` char(40) NOT NULL,
-  `patronymic` char(40) NOT NULL,
   `login` char(40) NOT NULL,
   `password` char(40) NOT NULL,
+  `first_name` char(40) NOT NULL,
+  `middle_name` char(40) NOT NULL,
+  `last_name` char(40) NOT NULL,
+  `birth_date` char(40) NOT NULL,
+  `address` char(40) NOT NULL,
+  `contact_phone` char(40) NOT NULL,
   `role` char(40) NOT NULL,
-  PRIMARY KEY (`usr_id`)
+  PRIMARY KEY (`login`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -42,7 +45,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (0,'petr','ivanov','petrovich','peiv','pass','patient');
+INSERT INTO `users` VALUES (0,'petya@yandex.ru','peiv','petr','petrovich','ivanov','01.01.2001','Pushkina street, Kookushkina house','88005553535','patient');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

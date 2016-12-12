@@ -20,7 +20,13 @@ public class User {
         this.role = role;
     }
 
-    public User() {}
+    public User(User user) {
+        this.userData = user.getUserData();
+        this.role = user.getRole();
+    }
+
+    public User() {
+    }
 
     public Role getRole() {
         return this.role;

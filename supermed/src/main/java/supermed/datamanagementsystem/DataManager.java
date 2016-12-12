@@ -1,4 +1,4 @@
-package supermed.sqlmanagementsystem;
+package supermed.datamanagementsystem;
 
 
 import java.sql.*;
@@ -10,13 +10,12 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by nikita on 08.12.2016.
  */
-public final class SqlManager {
+public final class DataManager {
     private static final String url = "jdbc:mysql://localhost:3306/supermed";
     private static final String user = "root";
     private static final String password = "root";
@@ -27,7 +26,7 @@ public final class SqlManager {
     private static InitialContext initialContext;
     private static DataSource dataSource;
 
-    private SqlManager() {}
+    private DataManager() {}
 
     private static void openConnection() {
         // opening database connection to MySQL server
@@ -64,11 +63,13 @@ public final class SqlManager {
                 User user = new User();
                 Role role = Role.createRole(resultSet.getString("role"));
                 UserData userData = UserData.newBuilder()
-                        .setFirstName(resultSet.getString("name"))
-                        .setMiddleName(resultSet.getString("s_name"))
-                        .setLastName(resultSet.getString("patronymic"))
+                        .setFirstName(resultSet.getString("first_name"))
+                        .setMiddleName(resultSet.getString("middle_name"))
+                        .setLastName(resultSet.getString("last_name"))
                         .setLogin(resultSet.getString("login"))
-                        .setPassportData(resultSet.getString("password"))
+                        .setBirthDate(resultSet.getString("birth_date"))
+                        .setAddress(resultSet.getString("address"))
+                        .setPhoneNumber(resultSet.getString("contact_phone"))
                         .build();
 
                 user.setRole(role);

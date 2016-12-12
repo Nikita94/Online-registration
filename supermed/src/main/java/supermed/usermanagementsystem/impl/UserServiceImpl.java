@@ -1,12 +1,10 @@
 package supermed.usermanagementsystem.impl;
 
-import supermed.httpexception.ResourceNotFoundException;
-import supermed.sqlmanagementsystem.SqlManager;
+import supermed.datamanagementsystem.DataManager;
 import supermed.usermanagementsystem.UserService;
 import supermed.usermanagementsystem.user.User;
 
 import javax.naming.NamingException;
-import javax.ws.rs.core.Response;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +18,13 @@ public class UserServiceImpl implements UserService {
     public User logIn(String login, String password) throws NamingException {
         List<User> users = new ArrayList<User>();
         try {
-            users = SqlManager.getUsers();
+            users = DataManager.getUsers();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         User goalUser = null;
         for (User user : users) {
-            if (user.getUserData().getLogin().equals(login)
-                    && user.getUserData().getPassportData().equals(password)) {
+            if (user.getUserData().getLogin().equals(login)) {
                 goalUser = user;
                 break;
             }

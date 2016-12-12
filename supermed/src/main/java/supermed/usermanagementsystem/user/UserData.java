@@ -7,30 +7,34 @@ package supermed.usermanagementsystem.user;
 
 public class UserData {
 
-    private String login;
-
+    private String email;
     private String firstName;
-
     private String middleName;
-
     private String lastName;
+    private String birthDate;
+    private String address;
+    private String phoneNumber;
 
-    private String passportData;
-
-    private UserData(String login, String firstName, String middleName, String lastName, String
-            passportData) {
-        this.login = login;
+    private UserData(String email, String firstName, String middleName, String lastName, String
+            birthDate, String address, String phoneNumber) {
+        this.email = email;
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
-        this.passportData = passportData;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
     }
 
     private UserData() {
     }
 
     public String getLogin() {
-        return login;
+        return email;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getFirstName() {
@@ -45,8 +49,16 @@ public class UserData {
         return lastName;
     }
 
-    public String getPassportData() {
-        return passportData;
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     public static UserDataBuilder newBuilder() {
@@ -54,17 +66,24 @@ public class UserData {
     }
 
     public class UserDataBuilder {
-        private String login;
+        private String email;
         private String firstName;
         private String middleName;
         private String lastName;
-        private String passportData;
+        private String birthDate;
+        private String address;
+        private String phoneNumber;
 
         private UserDataBuilder() {
         }
 
-        public UserDataBuilder setLogin(String login) {
-            this.login = new String(login);
+        public UserDataBuilder setEmail(String email) {
+            this.email = new String(email);
+            return this;
+        }
+
+        public UserDataBuilder setLogin(String email) {
+            this.email = new String(email);
             return this;
         }
 
@@ -83,15 +102,27 @@ public class UserData {
             return this;
         }
 
-        public UserDataBuilder setPassportData(String passportData) {
-            this.passportData = new String(passportData);
+        public UserDataBuilder setBirthDate(String birthDate) {
+            this.birthDate = new String(birthDate);
+            return this;
+        }
+
+        public UserDataBuilder setAddress(String address) {
+            this.address = new String(address);
+            return this;
+        }
+
+        public UserDataBuilder setPhoneNumber(String phoneNumber) {
+            this.phoneNumber = new String(phoneNumber);
             return this;
         }
 
         public UserData build() {
             if ((firstName != null) && (middleName != null) && (lastName != null) &&
-                    (passportData != null)) {
-                return new UserData(login, firstName, middleName, lastName, passportData);
+                    (email != null) && (birthDate != null) && (address != null)
+                    && (phoneNumber != null)) {
+                return new UserData(email, firstName, middleName, lastName, birthDate, address,
+                        phoneNumber);
             }
             throw new IllegalStateException("Not all fields of UserData were initialized");
         }

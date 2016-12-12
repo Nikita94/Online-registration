@@ -2,6 +2,7 @@ package supermed.usermanagementsystem.impl;
 
 import supermed.httpexception.ResourceNotFoundException;
 import supermed.httpexception.ResponseBuilderImpl;
+import supermed.datamanagementsystem.DataManager;
 import supermed.usermanagementsystem.UserService;
 import supermed.usermanagementsystem.user.User;
 
@@ -11,6 +12,7 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.util.ArrayList;
 
 /**
  * Created by Alexander on 24.11.2016.
@@ -28,7 +30,8 @@ public class UserManager extends Application {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response logIn(@FormParam("login") String login,
-                          @FormParam("password") String password) throws ResourceNotFoundException, NamingException {
+                          @FormParam("password") String password) throws
+            ResourceNotFoundException, NamingException {
         User user = userService.logIn(login, password);
         if (user != null)
             return responseBuilder.respondWithStatusAndObject(Status.OK, user);
@@ -54,17 +57,38 @@ public class UserManager extends Application {
     //    return false;
     //}
 
-    //@GET
-    //@Path("/{id}")
-    //public User getUser(String login) {
-        //return null;
-    //}
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.TEXT_HTML)
+    public String getUser(@QueryParam("id") String id) {
+        /*User user = new User();
+        Role role = Role.createRole("patient");
+        UserData userData = UserData.newBuilder()
+                .setFirstName("Иван")
+                .setMiddleName("Иванович")
+                .setLastName("Иванов")
+                .setLogin("vanya@yandex.ru")
+                .setBirthDate("01.01.2001")
+                .setAddress("none")
+                .setPhoneNumber("none")
+                .build();
 
-   // @POST
-   // @Consumes(MediaType.APPLICATION_JSON)
-   // public boolean crateUser(User user, String password) {
-   //     return false;
-   // }
+        user.setRole(role);
+        user.setUserData(userData);*/
+        try {
+            ArrayList<User> users = (ArrayList<User>) DataManager.getUsers();
+            return PageWriter.printUserProfilePage(users.get(0));
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    // @POST
+    // @Consumes(MediaType.APPLICATION_JSON)
+    // public boolean crateUser(User user, String password) {
+    //     return false;
+    // }
 
     // This method is called if TEXT_PLAIN is request
     @GET

@@ -14,8 +14,11 @@ public class User {
     private Role role;
     @JsonProperty("user_data")
     private UserData userData;
+    @JsonProperty("user_id")
+    private String userID;
 
-    public User(UserData userData, Role role) {
+    public User(String userID, UserData userData, Role role) {
+        this.userID = userID;
         this.userData = userData;
         this.role = role;
     }
@@ -42,5 +45,13 @@ public class User {
 
     public void setUserData(UserData userData) {
         this.userData = userData;
+    }
+
+    public void setID(String userID) {
+        this.userID = userID;
+    }
+
+    public String getID() {
+        return this.userID;
     }
 }

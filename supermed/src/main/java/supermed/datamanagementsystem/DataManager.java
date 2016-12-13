@@ -2,10 +2,12 @@ package supermed.datamanagementsystem;
 
 
 import java.sql.*;
+
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
 import supermed.usermanagementsystem.user.UserData;
 
+import javax.jws.soap.SOAPBinding;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.*;
@@ -26,7 +28,8 @@ public final class DataManager {
     private static InitialContext initialContext;
     private static DataSource dataSource;
 
-    private DataManager() {}
+    private DataManager() {
+    }
 
     private static void openConnection() {
         // opening database connection to MySQL server
@@ -54,13 +57,69 @@ public final class DataManager {
             initialContext.close();
     }
 
-    public static List<User> getUsers() throws SQLException, NamingException {
+
+    public static User getUserByLogin(String login) {
         openConnection();
-        List<User> users = new ArrayList<User>();
         try {
-            resultSet = statement.executeQuery("select * from users");
-            while (resultSet.next()) {
-                User user = new User();
+            resultSet = statement.executeQuery("select * from users where login = '" + login + "'");
+            return constructUser();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public static User logIn(String login, String password) {
+        openConnection();
+        try {
+            resultSet = statement.executeQuery("select * from users where login = '" + login +
+                    "' and password = '" + password + "'");
+            return constructUser();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public static User getUserById(String id) {
+        openConnection();
+        try {
+            resultSet = statement.executeQuery("select * from users where id = " + id);
+            return constructUser();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private static User constructUser() {
+        User user = new User();
+        try {
+            if (resultSet.next()) {
                 Role role = Role.createRole(resultSet.getString("role"));
                 UserData userData = UserData.newBuilder()
                         .setFirstName(resultSet.getString("first_name"))
@@ -71,23 +130,14 @@ public final class DataManager {
                         .setAddress(resultSet.getString("address"))
                         .setPhoneNumber(resultSet.getString("contact_phone"))
                         .build();
-
                 user.setRole(role);
                 user.setUserData(userData);
-                users.add(user);
+                user.setID(resultSet.getString("id"));
+                return user;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        closeConnection();
-        return users;
-    }
-
-    public static void main(String[] args) throws NamingException {
-        try {
-            System.out.print(getUsers());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        return null;
     }
 }

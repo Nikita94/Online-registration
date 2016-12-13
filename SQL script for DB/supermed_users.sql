@@ -25,8 +25,8 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `usr_id` int(11) NOT NULL,
-  `login` char(40) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `login` char(40) NOT NULL UNIQUE,
   `password` char(40) NOT NULL,
   `first_name` char(40) NOT NULL,
   `middle_name` char(40) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE `users` (
   `address` char(40) NOT NULL,
   `contact_phone` char(40) NOT NULL,
   `role` char(40) NOT NULL,
-  PRIMARY KEY (`login`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -45,7 +45,10 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (0,'petya@yandex.ru','peiv','petr','petrovich','ivanov','01.01.2001','Pushkina street, Kookushkina house','88005553535','patient');
+INSERT INTO `users` VALUES (0,'petya@yandex.ru','petya','petr','petrovich','ivanov','01.01.2001','Pushkina street, Kookushkina house','88005553535','patient');
+INSERT INTO `users` VALUES (NULL,'vanya@yandex.ru','vanya','vanya','ivanovich','ivanov','01.01.2001','Pushkina street, Kookushkina house','88005553535','patient');
+INSERT INTO `users` VALUES (NULL,'dima@yandex.ru','dima','dima','dmitrievich','dmitriev','01.01.2001','Pushkina street, Kookushkina house','88005553535','patient');
+INSERT INTO `users` VALUES (NULL,'vasya@yandex.ru','vasya','vasya','vasilievich','vasiliev','01.01.2001','Pushkina street, Kookushkina house','88005553535','patient');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

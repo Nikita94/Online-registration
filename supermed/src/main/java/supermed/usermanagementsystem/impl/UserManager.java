@@ -1,26 +1,29 @@
 package supermed.usermanagementsystem.impl;
 
+import supermed.datamanagementsystem.DataManager;
 import supermed.httpexception.ResourceNotFoundException;
 import supermed.httpexception.ResponseBuilderImpl;
-import supermed.datamanagementsystem.DataManager;
 import supermed.usermanagementsystem.UserService;
 import supermed.usermanagementsystem.user.User;
 
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.ArrayList;
+import java.net.URISyntaxException;
 
 /**
  * Created by Alexander on 24.11.2016.
  */
-@Path("/users")
+@Path("/")
 public class UserManager extends Application {
-
-    protected UserService userService = new UserServiceImpl();
+    @Context
+    HttpServletRequest currentRequest;
     private ResponseBuilderImpl responseBuilder = new ResponseBuilderImpl();
 
     public UserManager() {
@@ -28,15 +31,30 @@ public class UserManager extends Application {
     }
 
     @POST
+    @Path("/login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response logIn(@FormParam("login") String login,
                           @FormParam("password") String password) throws
             ResourceNotFoundException, NamingException {
-        User user = userService.logIn(login, password);
-        if (user != null)
-            return responseBuilder.respondWithStatusAndObject(Status.OK, user);
-        else
-            return responseBuilder.respondWithStatusAndObject(Status.NOT_FOUND, "User not found");
+        User user = DataManager.logIn(login, password);
+        if (user != null) {
+            currentRequest.getSession().setAttribute("isAuthorized", Boolean.TRUE);
+            java.net.URI location = null;
+            try {
+                location = new java.net.URI("./users/" + user.getID());
+                return Response.temporaryRedirect(location).build();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return responseBuilder.respondWithStatusAndObject(Status.NOT_FOUND, "User not found");
+    }
+
+    @GET
+    @Path("/login")
+    @Produces(MediaType.TEXT_HTML)
+    public String logIn() {
+        return PageWriter.printLoginPage();
     }
 //
     //@POST
@@ -58,30 +76,17 @@ public class UserManager extends Application {
     //}
 
     @GET
-    @Path("/{id}")
+    @Path("/users/{id}")
     @Produces(MediaType.TEXT_HTML)
-    public String getUser(@QueryParam("id") String id) {
-        /*User user = new User();
-        Role role = Role.createRole("patient");
-        UserData userData = UserData.newBuilder()
-                .setFirstName("Иван")
-                .setMiddleName("Иванович")
-                .setLastName("Иванов")
-                .setLogin("vanya@yandex.ru")
-                .setBirthDate("01.01.2001")
-                .setAddress("none")
-                .setPhoneNumber("none")
-                .build();
-
-        user.setRole(role);
-        user.setUserData(userData);*/
+    public String getUser(@PathParam("id") String id) {
         try {
-            ArrayList<User> users = (ArrayList<User>) DataManager.getUsers();
-            return PageWriter.printUserProfilePage(users.get(0));
+            if (currentRequest.getSession().getAttribute("isAuthorized") != null) {
+                return PageWriter.printUserProfilePage(DataManager.getUserById(id));
+            }
         } catch (Exception e) {
 
         }
-        return null;
+        return PageWriter.printErrorPage();
     }
 
     // @POST
@@ -89,27 +94,4 @@ public class UserManager extends Application {
     // public boolean crateUser(User user, String password) {
     //     return false;
     // }
-
-    // This method is called if TEXT_PLAIN is request
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String sayPlainTextHello() {
-        return "Hello Jersey";
-    }
-
-    // This method is called if XML is request
-    @GET
-    @Produces(MediaType.TEXT_XML)
-    public String sayXMLHello() {
-        return "<?xml version=\"1.0\"?>" + "<hello> Hello Jersey" + "</hello>";
-    }
-
-    // This method is called if HTML is request
-    @GET
-    @Path("/hello")
-    @Produces(MediaType.TEXT_HTML)
-    public String sayHtmlHello() {
-        return "<html> " + "<title>" + "Hello Jersey" + "</title>"
-                + "<body><h1>" + "Hello Jersey" + "</body></h1>" + "</html> ";
-    }
 }

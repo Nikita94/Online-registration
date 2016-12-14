@@ -3,13 +3,14 @@ package supermed.usermanagementsystem.user;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * Created by Alexander on 22.11.2016.
  */
 
 @XmlRootElement
-public class User {
+public class User implements Serializable{
     @JsonProperty("user_role")
     private Role role;
     @JsonProperty("user_data")

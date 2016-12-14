@@ -52,7 +52,7 @@ public class UserManager extends Application {
                                @FormParam("address") String address,
                                @FormParam("contact_phone") String contact_phone,
                                @FormParam("role") String role,
-                               @FormParam("login") String login,
+                               @FormParam("email") String email,
                                @FormParam("password") String password) {
         UserData userData = UserData.newBuilder().setFirstName(first_name)
                 .setMiddleName(middle_name)
@@ -60,8 +60,8 @@ public class UserManager extends Application {
                 .setBirthDate(birth_date)
                 .setAddress(address)
                 .setPhoneNumber(contact_phone)
-                .setEmail(login)
-                .setLogin(login)
+                .setEmail(email)
+                .setLogin(email)
                 .build();
 
         User user = new User(userData, Role.createRole(role));
@@ -100,6 +100,14 @@ public class UserManager extends Application {
     @Produces(MediaType.TEXT_HTML)
     public String logIn() {
         return PageWriter.printLoginPage();
+    }
+
+
+    @GET
+    @Path("/create_user")
+    @Produces(MediaType.TEXT_HTML)
+    public String createUser() {
+        return PageWriter.printCreateUserPage();
     }
 //
     //@POST

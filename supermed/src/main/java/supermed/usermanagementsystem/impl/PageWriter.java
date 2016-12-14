@@ -107,7 +107,12 @@ public class PageWriter {
     }
 
     public static String printErrorPage() {
-        return "";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<html><head></head><body>");
+        String error = "<h2>Incorrect Data</h2>\n";
+        stringBuilder.append(error);
+        stringBuilder.append("</body></html>");
+        return stringBuilder.toString();
     }
 
     public static String printLoginPage() {

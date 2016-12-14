@@ -1,18 +1,17 @@
 package supermed.datamanagementsystem;
 
 
-import java.sql.*;
-
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
 import supermed.usermanagementsystem.user.UserData;
 
-import javax.jws.soap.SOAPBinding;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Created by nikita on 08.12.2016.
@@ -139,5 +138,35 @@ public final class DataManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static boolean createUser(User user, String password) {
+        openConnection();
+        UserData userData = user.getUserData();
+        String query = "INSERT INTO `users` VALUES (NULL,'" +
+                userData.getLogin() +"','"+
+                password + "','" +
+                userData.getFirstName() + "','" +
+                userData.getMiddleName() + "','" +
+                userData.getLastName() + "','" +
+                userData.getBirthDate() + "','" +
+                userData.getAddress() +"','" +
+                userData.getPhoneNumber() + "','" +
+                user.getRole().getName() + "');";
+        try {
+            if (statement.executeUpdate(query) == 0)
+                return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

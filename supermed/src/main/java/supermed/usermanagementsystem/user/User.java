@@ -23,6 +23,12 @@ public class User {
         this.role = role;
     }
 
+    public User(UserData userData, Role role) {
+        this.userID = null;
+        this.userData = userData;
+        this.role = role;
+    }
+
     public User(User user) {
         this.userData = user.getUserData();
         this.role = user.getRole();

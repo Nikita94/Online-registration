@@ -3,12 +3,12 @@ package supermed.usermanagementsystem.impl;
 import supermed.datamanagementsystem.DataManager;
 import supermed.httpexception.ResourceNotFoundException;
 import supermed.httpexception.ResponseBuilderImpl;
-import supermed.usermanagementsystem.UserService;
+import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
+import supermed.usermanagementsystem.user.UserData;
 
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
@@ -30,16 +30,61 @@ public class UserManager extends Application {
 
     }
 
+    @GET
+    public Response defaultePage() {
+        java.net.URI location = null;
+            try {
+                location = new java.net.URI("./login");
+                return Response.temporaryRedirect(location).build();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        return null;
+    }
+
+    @POST
+    @Path("/create_user")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response createUser(@FormParam("first_name") String first_name,
+                               @FormParam("middle_name") String middle_name,
+                               @FormParam("last_name") String last_name,
+                               @FormParam("birth_date") String birth_date,
+                               @FormParam("address") String address,
+                               @FormParam("contact_phone") String contact_phone,
+                               @FormParam("role") String role,
+                               @FormParam("login") String login,
+                               @FormParam("password") String password) {
+        UserData userData = UserData.newBuilder().setFirstName(first_name)
+                .setMiddleName(middle_name)
+                .setLastName(last_name)
+                .setBirthDate(birth_date)
+                .setAddress(address)
+                .setPhoneNumber(contact_phone)
+                .setEmail(login)
+                .setLogin(login)
+                .build();
+
+        User user = new User(userData, Role.createRole(role));
+        boolean wasExecuted = DataManager.createUser(user, password);
+        if (!wasExecuted) {
+            return responseBuilder.respondWithStatusAndObject(Status.BAD_REQUEST, "Incorrect data");
+        }
+        return null;
+
+    }
+
+
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_HTML)
     public Response logIn(@FormParam("login") String login,
                           @FormParam("password") String password) throws
             ResourceNotFoundException, NamingException {
         User user = DataManager.logIn(login, password);
+        java.net.URI location = null;
         if (user != null) {
             currentRequest.getSession().setAttribute("isAuthorized", Boolean.TRUE);
-            java.net.URI location = null;
             try {
                 location = new java.net.URI("./users/" + user.getID());
                 return Response.temporaryRedirect(location).build();
@@ -47,7 +92,7 @@ public class UserManager extends Application {
                 e.printStackTrace();
             }
         }
-        return responseBuilder.respondWithStatusAndObject(Status.NOT_FOUND, "User not found");
+        return null;
     }
 
     @GET
@@ -75,7 +120,7 @@ public class UserManager extends Application {
     //    return false;
     //}
 
-    @GET
+    @POST
     @Path("/users/{id}")
     @Produces(MediaType.TEXT_HTML)
     public String getUser(@PathParam("id") String id) {

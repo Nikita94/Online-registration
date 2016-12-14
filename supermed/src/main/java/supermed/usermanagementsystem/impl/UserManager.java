@@ -87,7 +87,7 @@ public class UserManager extends Application {
             currentRequest.getSession().setAttribute("isAuthorized", Boolean.TRUE);
             try {
                 location = new java.net.URI("./users/" + user.getID());
-                return Response.temporaryRedirect(location).build();
+                return Response.seeOther(location).build();
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
@@ -120,7 +120,7 @@ public class UserManager extends Application {
     //    return false;
     //}
 
-    @POST
+    @GET
     @Path("/users/{id}")
     @Produces(MediaType.TEXT_HTML)
     public String getUser(@PathParam("id") String id) {

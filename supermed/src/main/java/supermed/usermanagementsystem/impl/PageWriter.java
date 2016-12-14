@@ -8,10 +8,15 @@ import supermed.usermanagementsystem.user.User;
  * Created by Alexander on 11.12.2016.
  */
 public class PageWriter {
-    private static final String HEADING = "<html><head></head><body><div class=\"container\">\n" +
+    private static final String HEADING = "<html><head><meta name=\"viewport\" " +
+            "content=\"width=device-width, initial-scale=1\">\n" +
+            "<link rel=\"stylesheet\" href=\"https://code.jquery.com/mobile/1.4.5/jquery" +
+            ".mobile-1.4.5.min.css\">\n" +
+            "<script src=\"https://code.jquery.com/jquery-1.11.3.min.js\"></script>\n" +
+            "<script src=\"https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min" +
+            ".js\"></script></head><body><div class=\"container\">\n" +
             "      <div class=\"row\">\n" +
             "      <div class=\"col-md-5  toppad  pull-right col-md-offset-3 \">\n" +
-            "           <a href=\"edit.html\">Edit Profile</a>\n" +
             "\n" +
             "        <a href=\"edit.html\">Logout</a>\n" +
             "       <br>\n" +
@@ -24,18 +29,7 @@ public class PageWriter {
             "          <div class=\"panel panel-info\">\n" +
             "            <div class=\"panel-heading\">\n" +
             "              \n" +
-            "            </div>\n" +
-            "            <div class=\"panel-body\">\n" +
-            "              <div class=\"row\">\n" +
-            "                <div class=\"col-md-3 col-lg-3 \" align=\"center\"> <img alt=\"User " +
-            "Pic\" src=\"http://babyinfoforyou" +
-            ".com/wp-content/uploads/2014/10/avatar-300x300.png\" class=\"img-circle " +
-            "img-responsive\"> </div>\n" +
-            "                \n" +
-            "                \n" +
-            "                <div class=\" col-md-9 col-lg-9 \"> \n" +
-            "                  <table class=\"table table-user-information\">\n" +
-            "                    <tbody>";
+            "            </div>\n";
     private static final String ENDING = "</tbody>\n" +
             "                  </table>\n" +
             "                </div>\n" +
@@ -50,6 +44,9 @@ public class PageWriter {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HEADING);
+        if (user.getRole().equals(Role.PATIENT)) {
+            stringBuilder.append(insertUserMenu());
+        }
         stringBuilder.append(getUserLastName(user));
         stringBuilder.append(getUserFirstName(user));
         stringBuilder.append(getUserMiddleName(user));
@@ -113,6 +110,45 @@ public class PageWriter {
         stringBuilder.append(error);
         stringBuilder.append("</body></html>");
         return stringBuilder.toString();
+    }
+
+    private static String insertUserMenu() {
+        return "   <table align=\"right\">\n" +
+                " <tr><td>  \n" +
+                " <div data-role=\"main\" class=\"ui-content\" align=\"right\">\n" +
+                "    " +
+                "<a href=\"#myPopup\" data-rel=\"popup\" class=\"ui-btn ui-btn-inline ui-corner-all\">Запись на прием</a>\n" +
+                "\n" +
+                "    <div data-role=\"popup\" id=\"myPopup\" class=\"ui-content\" " +
+                "style=\"min-width:250px;\">\n" +
+                "      <form method=\"post\" action=\"\">\n" +
+                "        <div>\n" +
+                "          <h3>Выберите день</h3>\n" +
+                "\t\t  <p>Желаемая дата приема: <input type=\"date\"></p>\n" +
+                "        </div>\n" +
+                "      </form>\n" +
+                "    </div>\n" +
+                "  </div>\n" +
+                "  </td></tr>\n" +
+                "          <tr><td>\n" +
+                "            <button type=\"button\" class=\"shortButton\">Онлайн " +
+                "консультации</button></tr><td></table>" + insertImage() +
+                "                <div class=\" col-md-9 col-lg-9 \"> \n" +
+                "                  <table class=\"table table-user-information\">\n" +
+                "                    <button type=\"button\" " +
+                "class=\"shortButton\">Редактировать</button>";
+    }
+
+    private static String insertImage() {
+        return " <div class=\"panel-body\">\n" +
+                "              <div class=\"row\">\n" +
+                "                <div class=\"col-md-3 col-lg-3 \" align=\"center\"> <img " +
+                "alt=\"User Pic\" src=\"http://babyinfoforyou" +
+                ".com/wp-content/uploads/2014/10/avatar-300x300.png\" class=\"img-circle " +
+                "img-responsive\"> </div>\n" +
+                "                \n" +
+                "                \n" +
+                "                <div class=\" col-md-9 col-lg-9 \"> ";
     }
 
     public static String printLoginPage() {
@@ -190,7 +226,8 @@ public class PageWriter {
                 "required>\n" +
                 "\n" +
                 "        <label><b>Password</b></label>\n" +
-                "        <input type=\"password\" placeholder=\"Enter Password\" name=\"password\" " +
+                "        <input type=\"password\" placeholder=\"Enter Password\" " +
+                "name=\"password\" " +
                 "required>\n" +
                 "\n" +
                 "        <button type=\"submit\">Login</button>\n" +

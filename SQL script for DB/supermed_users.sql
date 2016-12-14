@@ -49,6 +49,8 @@ INSERT INTO `users` VALUES (0,'petya@yandex.ru','petya','petr','petrovich','ivan
 INSERT INTO `users` VALUES (NULL,'vanya@yandex.ru','vanya','vanya','ivanovich','ivanov','01.01.2001','Pushkina street, Kookushkina house','88005553535','patient');
 INSERT INTO `users` VALUES (NULL,'dima@yandex.ru','dima','dima','dmitrievich','dmitriev','01.01.2001','Pushkina street, Kookushkina house','88005553535','patient');
 INSERT INTO `users` VALUES (NULL,'vasya@yandex.ru','vasya','vasya','vasilievich','vasiliev','01.01.2001','Pushkina street, Kookushkina house','88005553535','patient');
+INSERT INTO `users` VALUES (NULL,'surgeon@yandex.ru','surgeon','Сергей','Сергеевич','Сергеев','01.01.2001','Pushkina street, Kookushkina house','88005553535','doctor');
+INSERT INTO `users` VALUES (NULL,'manager@yandex.ru','manager','Михаил','Михаилович','Михайлов','01.01.2001','Pushkina street, Kookushkina house','88005553535','manager');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -61,4 +63,47 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-08 14:53:49
+
+
+DROP TABLE IF EXISTS `positions`;
+CREATE TABLE `positions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` char(40) NOT NULL UNIQUE,
+  `is_medical` int(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `positions` WRITE;
+INSERT INTO `positions` VALUES (0,'Терапевт',1);
+INSERT INTO `positions` VALUES (NULL,'Хирург',1);
+INSERT INTO `positions` VALUES (NULL,'Окулист',1);
+INSERT INTO `positions` VALUES (NULL,'Стоматолог',1);
+INSERT INTO `positions` VALUES (NULL,'Менеджер',0);
+UNLOCK TABLES;
+
+
+DROP TABLE IF EXISTS `branches`;
+CREATE TABLE `branches` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `address` char(40) NOT NULL UNIQUE,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+LOCK TABLES `branches` WRITE;
+INSERT INTO `branches` VALUES (0,'ул. Кукушкина, дом Колотушкина');
+INSERT INTO `branches` VALUES (NULL,'ул. Пушкина, дом Пострелушкина');
+INSERT INTO `branches` VALUES (NULL,'ул. Ватрушкина, дом Толстушкина');
+UNLOCK TABLES;
+
+
+
+DROP TABLE IF EXISTS `employees`;
+CREATE TABLE `employees` (
+  `id` int(11),
+  `position_id` int(11),
+  `branch_id` int(11),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+LOCK TABLES `employees` WRITE;
+INSERT INTO `employees` VALUES (4,1,0);
+INSERT INTO `employees` VALUES (5,4,0);
+UNLOCK TABLES;

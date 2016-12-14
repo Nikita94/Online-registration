@@ -17,9 +17,6 @@ import java.sql.Statement;
  * Created by nikita on 08.12.2016.
  */
 public final class DataManager {
-    private static final String url = "jdbc:mysql://localhost:3306/supermed";
-    private static final String user = "root";
-    private static final String password = "root";
 
     private static Connection connection;
     private static Statement statement;
@@ -154,7 +151,7 @@ public final class DataManager {
                 userData.getPhoneNumber() + "','" +
                 user.getRole().getName() + "');";
         try {
-            if (statement.executeUpdate(query) == 0)
+            if (statement.executeUpdate(query) != 0)
                 return true;
         } catch (SQLException e) {
             e.printStackTrace();

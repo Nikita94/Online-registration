@@ -30,6 +30,7 @@ public class PageWriter {
             "            <div class=\"panel-heading\">\n" +
             "              \n" +
             "            </div>\n";
+
     private static final String ENDING = "</tbody>\n" +
             "                  </table>\n" +
             "                </div>\n" +
@@ -228,6 +229,99 @@ public class PageWriter {
                 "        <label><b>Password</b></label>\n" +
                 "        <input type=\"password\" placeholder=\"Enter Password\" " +
                 "name=\"password\" " +
+                "required>\n" +
+                "\n" +
+                "        <button type=\"submit\">Login</button>\n" +
+                "        <input type=\"checkbox\" checked=\"checked\"> Remember me\n" +
+                "    </div>\n" +
+                "\n" +
+                "    <div class=\"container\" style=\"background-color:#f1f1f1\">\n" +
+                "        <button type=\"button\" class=\"cancelbtn\">Cancel</button>\n" +
+                "        <span class=\"psw\">Forgot <a href=\"#\">password?</a></span>\n" +
+                "    </div>\n" +
+                "</form>\n" +
+                "\n" +
+                "</body>\n" +
+                "</html>\n";
+    }
+
+
+    public static String printCreateUserPage() {
+        return "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<style>\n" +
+                "form {\n" +
+                "    border: 3px solid #f1f1f1;\n" +
+                "}\n" +
+                "\n" +
+                "input[type=text], input[type=password] {\n" +
+                "    width: 100%;\n" +
+                "    padding: 12px 20px;\n" +
+                "    margin: 8px 0;\n" +
+                "    display: inline-block;\n" +
+                "    border: 1px solid #ccc;\n" +
+                "    box-sizing: border-box;\n" +
+                "}\n" +
+                "\n" +
+                "button {\n" +
+                "    background-color: #4CAF50;\n" +
+                "    color: white;\n" +
+                "    padding: 14px 20px;\n" +
+                "    margin: 8px 0;\n" +
+                "    border: none;\n" +
+                "    cursor: pointer;\n" +
+                "    width: 100%;\n" +
+                "}\n" +
+                "\n" +
+                ".cancelbtn {\n" +
+                "    width: auto;\n" +
+                "    padding: 10px 18px;\n" +
+                "    background-color: #f44336;\n" +
+                "}\n" +
+                "\n" +
+                ".imgcontainer {\n" +
+                "    text-align: center;\n" +
+                "    margin: 24px 0 12px 0;\n" +
+                "}\n" +
+                "\n" +
+                "img.avatar {\n" +
+                "    width: 40%;\n" +
+                "    border-radius: 50%;\n" +
+                "}\n" +
+                "\n" +
+                ".container {\n" +
+                "    padding: 16px;\n" +
+                "}\n" +
+                "\n" +
+                "span.psw {\n" +
+                "    float: right;\n" +
+                "    padding-top: 16px;\n" +
+                "}\n" +
+                "\n" +
+                "/* Change styles for span and cancel button on extra small screens */\n" +
+                "@media screen and (max-width: 300px) {\n" +
+                "    span.psw {\n" +
+                "       display: block;\n" +
+                "       float: none;\n" +
+                "    }\n" +
+                "    .cancelbtn {\n" +
+                "       width: 100%;\n" +
+                "    }\n" +
+                "}\n" +
+                "\n" +
+                "</style>\n" +
+                "<body>\n" +
+                "\n" +
+                "<h2>Login Form</h2>\n" +
+                "\n" +
+                "<form  method=\"post\" action=\"\">\n" +
+                "    <div class=\"container\">\n" +
+                "        <label><b>Username</b></label>\n" +
+                "        <input type=\"text\" placeholder=\"Enter Username\" name=\"login\" " +
+                "required>\n" +
+                "\n" +
+                "        <label><b>Password</b></label>\n" +
+                "        <input type=\"password\" placeholder=\"Enter Password\" name=\"password\" " +
                 "required>\n" +
                 "\n" +
                 "        <button type=\"submit\">Login</button>\n" +

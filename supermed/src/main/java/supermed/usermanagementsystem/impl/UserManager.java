@@ -3,7 +3,6 @@ package supermed.usermanagementsystem.impl;
 import supermed.datamanagementsystem.DataManager;
 import supermed.httpexception.ResourceNotFoundException;
 import supermed.httpexception.ResponseBuilderImpl;
-import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
 import supermed.usermanagementsystem.user.UserData;
 
@@ -16,6 +15,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URISyntaxException;
+
+import static supermed.usermanagementsystem.user.Role.MANAGER;
+import static supermed.usermanagementsystem.user.Role.createRole;
 
 /**
  * Created by Alexander on 24.11.2016.
@@ -52,25 +54,28 @@ public class UserManager extends Application {
                                @FormParam("address") String address,
                                @FormParam("contact_phone") String contact_phone,
                                @FormParam("role") String role,
-                               @FormParam("login") String login,
+                               @FormParam("email") String email,
                                @FormParam("password") String password) {
-        UserData userData = UserData.newBuilder().setFirstName(first_name)
-                .setMiddleName(middle_name)
-                .setLastName(last_name)
-                .setBirthDate(birth_date)
-                .setAddress(address)
-                .setPhoneNumber(contact_phone)
-                .setEmail(login)
-                .setLogin(login)
-                .build();
-
-        User user = new User(userData, Role.createRole(role));
-        boolean wasExecuted = DataManager.createUser(user, password);
-        if (!wasExecuted) {
-            return responseBuilder.respondWithStatusAndObject(Status.BAD_REQUEST, "Incorrect data");
+        User currentUser = (User) currentRequest.getAttribute("User");
+        if (currentUser.getRole() == MANAGER) {
+            responseBuilder.respondWithStatusAndObject(Status.CONFLICT, "You haven't enough permissions");
+        } else {
+            UserData userData = UserData.newBuilder().setFirstName(first_name)
+                    .setMiddleName(middle_name)
+                    .setLastName(last_name)
+                    .setBirthDate(birth_date)
+                    .setAddress(address)
+                    .setPhoneNumber(contact_phone)
+                    .setEmail(email)
+                    .setLogin(email)
+                    .build();
+            User user = new User(userData, createRole(role));
+            boolean wasExecuted = DataManager.createUser(user, password);
+            if (!wasExecuted) {
+                return responseBuilder.respondWithStatusAndObject(Status.BAD_REQUEST, "Incorrect data");
+            }
         }
         return null;
-
     }
 
 
@@ -84,6 +89,7 @@ public class UserManager extends Application {
         User user = DataManager.logIn(login, password);
         java.net.URI location = null;
         if (user != null) {
+            currentRequest.getSession().setAttribute("User", user);
             currentRequest.getSession().setAttribute("isAuthorized", Boolean.TRUE);
             try {
                 location = new java.net.URI("./users/" + user.getID());
@@ -100,6 +106,14 @@ public class UserManager extends Application {
     @Produces(MediaType.TEXT_HTML)
     public String logIn() {
         return PageWriter.printLoginPage();
+    }
+
+
+    @GET
+    @Path("/create_user")
+    @Produces(MediaType.TEXT_HTML)
+    public String createUser() {
+        return PageWriter.printCreateUserPage();
     }
 //
     //@POST
@@ -133,10 +147,4 @@ public class UserManager extends Application {
         }
         return PageWriter.printErrorPage();
     }
-
-    // @POST
-    // @Consumes(MediaType.APPLICATION_JSON)
-    // public boolean crateUser(User user, String password) {
-    //     return false;
-    // }
 }

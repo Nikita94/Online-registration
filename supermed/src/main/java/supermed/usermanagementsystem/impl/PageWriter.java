@@ -18,7 +18,7 @@ public class PageWriter {
             "      <div class=\"row\">\n" +
             "      <div class=\"col-md-5  toppad  pull-right col-md-offset-3 \">\n" +
             "\n" +
-            "        <a href=\"edit.html\">Logout</a>\n" +
+            "        <a href=\"../login\">Logout</a>\n" +
             "       <br>\n" +
             "\n" +
             "      </div>\n" +
@@ -46,7 +46,7 @@ public class PageWriter {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HEADING);
         if (user.getRole().equals(Role.PATIENT)) {
-            stringBuilder.append(insertUserMenu());
+            stringBuilder.append(insertUserMenu(user.getID()));
         }
         stringBuilder.append(getUserLastName(user));
         stringBuilder.append(getUserFirstName(user));
@@ -113,7 +113,7 @@ public class PageWriter {
         return stringBuilder.toString();
     }
 
-    private static String insertUserMenu() {
+    private static String insertUserMenu(String id) {
         return "   <table align=\"right\">\n" +
                 " <tr><td>  \n" +
                 " <div data-role=\"main\" class=\"ui-content\" align=\"right\">\n" +
@@ -136,16 +136,15 @@ public class PageWriter {
                 "консультации</button></tr><td></table>" + insertImage() +
                 "                <div class=\" col-md-9 col-lg-9 \"> \n" +
                 "                  <table class=\"table table-user-information\">\n" +
-                "                    <button type=\"button\" " +
-                "class=\"shortButton\">Редактировать</button>";
+                "                    <a href=\"http://localhost:8080/supermed-1.0/update_yourself/" + id + "\"><button type=\"button\" " +
+                "class=\"shortButton\">Редактировать</button></a>";
     }
 
     private static String insertImage() {
         return " <div class=\"panel-body\">\n" +
                 "              <div class=\"row\">\n" +
                 "                <div class=\"col-md-3 col-lg-3 \" align=\"center\"> <img " +
-                "alt=\"User Pic\" src=\"http://babyinfoforyou" +
-                ".com/wp-content/uploads/2014/10/avatar-300x300.png\" class=\"img-circle " +
+                "alt=\"User Pic\" src=\"http://fn41.n.f.f.unblog.fr/files/2011/04/anonyme.jpg\" class=\"img-circle " +
                 "img-responsive\"> </div>\n" +
                 "                \n" +
                 "                \n" +
@@ -336,5 +335,29 @@ public class PageWriter {
                 "\n" +
                 "</body>\n" +
                 "</html>\n";
+    }
+
+    public static String printEditForm(User user) {
+        String form = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<body>\n" +
+                "\n" +
+                "<form method=\"post\" action=\"\">\n" +
+                "  Адресс:<br>\n" +
+                "  <input type=\"text\" name=\"address\" value=\""+ user.getUserData().getAddress() +"\">\n" +
+                "  <br>\n" +
+                "  Контактный телефон:<br>\n" +
+                "  <input type=\"text\" name=\"contact_phone\" value=\""+ user.getUserData().getPhoneNumber() +"\">\n" +
+                "  <br>\n" +
+                "  Пароль:<br>\n" +
+                "  <input type=\"text\" name=\"password\" value=\"\">\n" +
+                "  <br>\n" +
+                "  <input type=\"submit\" value=\"Редактировать\">\n" +
+                "  <br>\n" +
+                "</form> \n" +
+                "</body>\n" +
+                "</html>\n";
+
+        return form;
     }
 }

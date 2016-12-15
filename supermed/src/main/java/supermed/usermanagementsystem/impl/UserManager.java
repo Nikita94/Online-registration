@@ -108,6 +108,15 @@ public class UserManager extends Application {
         return PageWriter.printLoginPage();
     }
 
+    @GET
+    @Path("/logout")
+    @Produces(MediaType.TEXT_HTML)
+    public String logOut() {
+        currentRequest.getSession().removeAttribute("User");
+        currentRequest.getSession().removeAttribute("isAuthorized");
+        return PageWriter.printLoginPage();
+    }
+
 
     @GET
     @Path("/create_user")
@@ -115,18 +124,29 @@ public class UserManager extends Application {
     public String createUser() {
         return PageWriter.printCreateUserPage();
     }
-//
-    //@POST
-    //@Consumes(MediaType.APPLICATION_JSON)
-    //public boolean signIn(User user) {
-    //    return false;
-    //}
-//
-    //@POST
-    //@Consumes(MediaType.APPLICATION_JSON)
-    //public boolean updateUser(User user) {
-    //    return false;
-    //}
+
+    @POST
+    @Path("/update_yourself/{id}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_HTML)
+    public Response updateUser(@PathParam("id") String id,
+                              @FormParam("password") String password,
+                              @FormParam("address") String address,
+                              @FormParam("contact_phone") String contact_phone) {
+        User user = DataManager.getUserById(id);
+        //User currentUser = (User) currentRequest.getAttribute("User");
+        //if (user.getID().equals(currentUser.getID())) {
+            DataManager.updateInfoAboutYourself(id, password, address, contact_phone);
+        java.net.URI location = null;
+        try {
+            location = new java.net.URI("./users/" + id);
+            return Response.seeOther(location).build();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        //}
+        return null;
+    }
 //
     //@DELETE
     //@Path("/{id}")
@@ -141,6 +161,21 @@ public class UserManager extends Application {
         try {
             if (currentRequest.getSession().getAttribute("isAuthorized") != null) {
                 return PageWriter.printUserProfilePage(DataManager.getUserById(id));
+            }
+        } catch (Exception e) {
+
+        }
+        return PageWriter.printErrorPage();
+    }
+
+    @GET
+    @Path("/update_yourself/{id}")
+    @Produces(MediaType.TEXT_HTML)
+    public String getEditForm(@PathParam("id") String id) {
+        User user = DataManager.getUserById(id);
+        try {
+            if (currentRequest.getSession().getAttribute("isAuthorized") != null) {
+                return PageWriter.printEditForm(user);
             }
         } catch (Exception e) {
 

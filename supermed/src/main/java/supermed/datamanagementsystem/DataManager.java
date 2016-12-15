@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by nikita on 08.12.2016.
@@ -112,6 +114,30 @@ public final class DataManager {
         return null;
     }
 
+    public static List<String> getMedicalPositions(String branchId) {
+        openConnection();
+        try {
+            resultSet = statement.executeQuery("select name from positions where is_medical = 1 " +
+                    "and id in (select position_id from employees where branch_id =" + branchId +
+                    " ) ");
+            ArrayList<String> medicalPostitions = new ArrayList<String>();
+            while (resultSet.next()) {
+                medicalPostitions.add(resultSet.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     private static User constructUser() {
         User user = new User();
         try {
@@ -141,13 +167,13 @@ public final class DataManager {
         openConnection();
         UserData userData = user.getUserData();
         String query = "INSERT INTO `users` VALUES (NULL,'" +
-                userData.getLogin() +"','"+
+                userData.getLogin() + "','" +
                 password + "','" +
                 userData.getFirstName() + "','" +
                 userData.getMiddleName() + "','" +
                 userData.getLastName() + "','" +
                 userData.getBirthDate() + "','" +
-                userData.getAddress() +"','" +
+                userData.getAddress() + "','" +
                 userData.getPhoneNumber() + "','" +
                 user.getRole().getName() + "');";
         try {

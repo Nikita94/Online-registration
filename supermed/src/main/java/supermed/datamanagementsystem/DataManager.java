@@ -138,7 +138,6 @@ public final class DataManager {
     }
 
     public static boolean createUser(User user, String password) {
-        openConnection();
         UserData userData = user.getUserData();
         String query = "INSERT INTO `users` VALUES (NULL,'" +
                 userData.getLogin() +"','"+
@@ -150,6 +149,19 @@ public final class DataManager {
                 userData.getAddress() +"','" +
                 userData.getPhoneNumber() + "','" +
                 user.getRole().getName() + "');";
+        return executeUpdateQuery(query);
+    }
+
+    public static boolean updateInfoAboutYourself(String id, String password, String address, String contact_phone) {
+        String query = "UPDATE users SET password = \"" +
+                password + "\", address = \"" +
+                address + "\", contact_phone = \"" +
+                contact_phone + "\" WHERE id = " + id;
+        return executeUpdateQuery(query);
+    }
+
+    private static boolean executeUpdateQuery(String query) {
+        openConnection();
         try {
             if (statement.executeUpdate(query) != 0)
                 return true;

@@ -1,8 +1,11 @@
 package supermed.usermanagementsystem.impl;
 
+import supermed.datamanagementsystem.DataManager;
 import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
+
+import java.util.Map;
 
 /**
  * Created by Alexander on 11.12.2016.
@@ -121,6 +124,7 @@ public class PageWriter {
     }
 
     private static String insertUserMenu(String id) {
+        Map<String, String> branches = DataManager.getBranches();
         return "   <table align=\"right\">\n" +
                 " <tr><td>  \n" +
                 " <div data-role=\"main\" class=\"ui-content\" align=\"right\">\n" +
@@ -132,7 +136,7 @@ public class PageWriter {
                 "      <form method=\"post\" action=\"\">\n" +
                 "        <div>\n" +
                 "          <h3>Выберите день</h3>\n" +
-                "\t\t  <p>Желаемая дата приема: <input type=\"date\"></p>\n" +
+                "\t\t  <p>Желаемая дата приема: <input type=\"date\"></p>\n" + insertBranches() +
                 "        </div>\n" +
                 "      </form>\n" +
                 "    </div>\n" +
@@ -146,6 +150,23 @@ public class PageWriter {
                 "                    " +
                 "<a href=\"http://localhost:8080/supermed-1.0/update_yourself/" + id + "\"><button type=\"button\" " +
                 "class=\"shortButton\">Редактировать</button></a>";
+    }
+
+    private static String insertBranches() {
+        Map<String, String> branches = DataManager.getBranches();
+        if (branches == null) {
+            return "";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<p>Филиал");
+        stringBuilder.append("<select>");
+        for (Map.Entry<String, String> entry : branches.entrySet()) {
+            stringBuilder.append("<option value=\"").append(entry.getKey())
+                    .append("\">").append(entry.getValue())
+                    .append("</option>");
+        }
+        stringBuilder.append("</select></p>");
+        return stringBuilder.toString();
     }
 
     private static String insertImage() {

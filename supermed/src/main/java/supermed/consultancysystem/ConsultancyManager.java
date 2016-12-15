@@ -5,7 +5,4 @@ package supermed.consultancysystem;
  */
 public class ConsultancyManager {
 
-    public static void createVisit(String doctorId, String patientId, String startDate) {
-
-    }
 }

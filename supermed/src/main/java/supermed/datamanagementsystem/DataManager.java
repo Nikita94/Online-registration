@@ -14,7 +14,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by nikita on 08.12.2016.
@@ -228,5 +230,29 @@ public final class DataManager {
             }
         }
         return false;
+    }
+
+    public static Map<String, String> getBranches() {
+        openConnection();
+        try {
+            resultSet = statement.executeQuery("select * from branches");
+            Map<String, String> output = new HashMap<String, String>();
+            while (resultSet.next()) {
+                output.put(resultSet.getString("id"),resultSet.getString("address"));
+            }
+            return output;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+
     }
 }

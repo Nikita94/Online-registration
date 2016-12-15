@@ -46,9 +46,9 @@ public class PageWriter {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HEADING);
         if (user.getRole().equals(Role.PATIENT)) {
-            stringBuilder.append(insertUserMenu(user.getID()));
+            stringBuilder.append(insertUserMenu(user));
         } else {
-            stringBuilder.append(insertUserMenu(user.getID()));
+            stringBuilder.append(insertUserMenu(user));
         }
         stringBuilder.append(getUserLastName(user));
         stringBuilder.append(getUserFirstName(user));
@@ -120,8 +120,8 @@ public class PageWriter {
         return stringBuilder.toString();
     }
 
-    private static String insertUserMenu(String id) {
-        return "   <table align=\"right\">\n" +
+    private static String insertUserMenu(User user) {
+        String insertForm = "   <table align=\"right\">\n" +
                 " <tr><td>  \n" +
                 " <div data-role=\"main\" class=\"ui-content\" align=\"right\">\n" +
                 "    " +
@@ -143,9 +143,18 @@ public class PageWriter {
                 "консультации</button></tr><td></table>" + insertImage() +
                 "                <div class=\" col-md-9 col-lg-9 \"> \n" +
                 "                  <table class=\"table table-user-information\">\n" +
-                "                    " +
-                "<a href=\"http://localhost:8080/supermed-1.0/update_yourself/" + id + "\"><button type=\"button\" " +
-                "class=\"shortButton\">Редактировать</button></a>";
+                "                    ";
+        if (user.getRole() == Role.MANAGER) {
+            insertForm += "<a href=\"../create_user\"><button type=\"button\" " +
+                    "class=\"shortButton\">Создать</button></a>" +
+                    "<a href=\"http://localhost:8080/supermed-1.0/update_yourself/" + user.getID() + "\"><button type=\"button\" " +
+                    "class=\"shortButton\">Редактировать</button></a>";
+        }
+        else {
+            insertForm += "<a href=\"http://localhost:8080/supermed-1.0/update_yourself/" + user.getID() + "\"><button type=\"button\" " +
+                    "class=\"shortButton\">Редактировать</button></a>";
+        }
+        return insertForm;
     }
 
     private static String insertImage() {
@@ -252,101 +261,6 @@ public class PageWriter {
                 "</body>\n" +
                 "</html>\n";
     }
-
-
-    public static String printCreateUserPage() {
-        return "<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<style>\n" +
-                "form {\n" +
-                "    border: 3px solid #f1f1f1;\n" +
-                "}\n" +
-                "\n" +
-                "input[type=text], input[type=password] {\n" +
-                "    width: 100%;\n" +
-                "    padding: 12px 20px;\n" +
-                "    margin: 8px 0;\n" +
-                "    display: inline-block;\n" +
-                "    border: 1px solid #ccc;\n" +
-                "    box-sizing: border-box;\n" +
-                "}\n" +
-                "\n" +
-                "button {\n" +
-                "    background-color: #4CAF50;\n" +
-                "    color: white;\n" +
-                "    padding: 14px 20px;\n" +
-                "    margin: 8px 0;\n" +
-                "    border: none;\n" +
-                "    cursor: pointer;\n" +
-                "    width: 100%;\n" +
-                "}\n" +
-                "\n" +
-                ".cancelbtn {\n" +
-                "    width: auto;\n" +
-                "    padding: 10px 18px;\n" +
-                "    background-color: #f44336;\n" +
-                "}\n" +
-                "\n" +
-                ".imgcontainer {\n" +
-                "    text-align: center;\n" +
-                "    margin: 24px 0 12px 0;\n" +
-                "}\n" +
-                "\n" +
-                "img.avatar {\n" +
-                "    width: 40%;\n" +
-                "    border-radius: 50%;\n" +
-                "}\n" +
-                "\n" +
-                ".container {\n" +
-                "    padding: 16px;\n" +
-                "}\n" +
-                "\n" +
-                "span.psw {\n" +
-                "    float: right;\n" +
-                "    padding-top: 16px;\n" +
-                "}\n" +
-                "\n" +
-                "/* Change styles for span and cancel button on extra small screens */\n" +
-                "@media screen and (max-width: 300px) {\n" +
-                "    span.psw {\n" +
-                "       display: block;\n" +
-                "       float: none;\n" +
-                "    }\n" +
-                "    .cancelbtn {\n" +
-                "       width: 100%;\n" +
-                "    }\n" +
-                "}\n" +
-                "\n" +
-                "</style>\n" +
-                "<body>\n" +
-                "\n" +
-                "<h2>Login Form</h2>\n" +
-                "\n" +
-                "<form  method=\"post\" action=\"\">\n" +
-                "    <div class=\"container\">\n" +
-                "        <label><b>Username</b></label>\n" +
-                "        <input type=\"text\" placeholder=\"Enter Username\" name=\"login\" " +
-                "required>\n" +
-                "\n" +
-                "        <label><b>Password</b></label>\n" +
-                "        <input type=\"password\" placeholder=\"Enter Password\" " +
-                "name=\"password\" " +
-                "required>\n" +
-                "\n" +
-                "        <button type=\"submit\">Login</button>\n" +
-                "        <input type=\"checkbox\" checked=\"checked\"> Remember me\n" +
-                "    </div>\n" +
-                "\n" +
-                "    <div class=\"container\" style=\"background-color:#f1f1f1\">\n" +
-                "        <button type=\"button\" class=\"cancelbtn\">Cancel</button>\n" +
-                "        <span class=\"psw\">Forgot <a href=\"#\">password?</a></span>\n" +
-                "    </div>\n" +
-                "</form>\n" +
-                "\n" +
-                "</body>\n" +
-                "</html>\n";
-    }
-
     public static String printEditForm(User user) {
         String form = "<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -371,5 +285,39 @@ public class PageWriter {
                 "</html>\n";
 
         return form;
+    }
+
+    public static String printCreateUserPage() {
+        String createUser = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<body>\n" +
+                "\n" +
+                "<form action=\"\">\n" +
+                "  Имя:<br>\n" +
+                "  <input type=\"text\" name=\"first_name\" value=\"\">\n" +
+                "  <br>\n" +
+                "   Отчество:<br>\n" +
+                "  <input type=\"text\" name=\"middle_name\" value=\"\">\n" +
+                "  <br>Фамилия:<br>\n" +
+                "  <input type=\"text\" name=\"last_name\" value=\"\">\n" +
+                "  <br>Дата рождения:<br>\n" +
+                "  <input type=\"text\" name=\"birth_date\" value=\"\">\n" +
+                "  <br>Адрес:<br>\n" +
+                "  <input type=\"text\" name=\"address\" value=\"\">\n" +
+                "  <br>Телефон:<br>\n" +
+                "  <input type=\"text\" name=\"contact_phone\" value=\"\">\n" +
+                "  <br>Роль:<br>\n" +
+                "  <input type=\"text\" name=\"role\" value=\"\">\n" +
+                "  <br>E-mail:<br>\n" +
+                "  <input type=\"text\" name=\"email\" value=\"\">\n" +
+                "  <br>Пароль:<br>\n" +
+                "  <input type=\"text\" name=\"password\" value=\"\">\n" +
+                "  <br>\n" +
+                "  <input type=\"submit\" value=\"Создать\">\n" +
+                "</form> \n" +
+                "\n" +
+                "</body>\n" +
+                "</html>\n";
+        return createUser;
     }
 }

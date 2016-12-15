@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 
 @XmlRootElement
-public class User implements Serializable{
+public class User implements Serializable {
     @JsonProperty("user_role")
     private Role role;
     @JsonProperty("user_data")
@@ -33,6 +33,7 @@ public class User implements Serializable{
     public User(User user) {
         this.userData = user.getUserData();
         this.role = user.getRole();
+        this.userID = user.getID();
     }
 
     public User() {

@@ -1,6 +1,7 @@
 package supermed.datamanagementsystem;
 
 
+import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
 import supermed.usermanagementsystem.user.UserData;
@@ -155,7 +156,30 @@ public final class DataManager {
                 user.setRole(role);
                 user.setUserData(userData);
                 user.setID(resultSet.getString("id"));
+                if (!user.getRole().equals(Role.PATIENT)) {
+                    return constructEmployee(user);
+                }
                 return user;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static Employee constructEmployee(User user) {
+
+        try {
+            resultSet = statement.executeQuery("select e.hire_date, b.address, p.name from " +
+                    "employees e, branches b, positions p where e.id = " +
+                    user.getID() + " and b.id = e.branch_id and p.id = e.position_id");
+            if (resultSet.next()) {
+                return Employee.newBuilder()
+                        .setUser(user)
+                        .setPosition(resultSet.getString("name"))
+                        .setBranchAddress(resultSet.getString("address"))
+                        .setHireDate(resultSet.getString("hire_date"))
+                        .build();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -178,7 +202,8 @@ public final class DataManager {
         return executeUpdateQuery(query);
     }
 
-    public static boolean updateInfoAboutYourself(String id, String password, String address, String contact_phone) {
+    public static boolean updateInfoAboutYourself(String id, String password, String address,
+                                                  String contact_phone) {
         String query = "UPDATE users SET password = \"" +
                 password + "\", address = \"" +
                 address + "\", contact_phone = \"" +

@@ -74,7 +74,7 @@ CREATE TABLE `positions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 LOCK TABLES `positions` WRITE;
-INSERT INTO `positions` VALUES (0,'Терапевт',1);
+INSERT INTO `positions` VALUES (NULL,'Терапевт',1);
 INSERT INTO `positions` VALUES (NULL,'Хирург',1);
 INSERT INTO `positions` VALUES (NULL,'Окулист',1);
 INSERT INTO `positions` VALUES (NULL,'Стоматолог',1);
@@ -89,7 +89,7 @@ CREATE TABLE `branches` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 LOCK TABLES `branches` WRITE;
-INSERT INTO `branches` VALUES (0,'ул. Кукушкина, дом Колотушкина');
+INSERT INTO `branches` VALUES (NULL,'ул. Кукушкина, дом Колотушкина');
 INSERT INTO `branches` VALUES (NULL,'ул. Пушкина, дом Пострелушкина');
 INSERT INTO `branches` VALUES (NULL,'ул. Ватрушкина, дом Толстушкина');
 UNLOCK TABLES;
@@ -101,9 +101,10 @@ CREATE TABLE `employees` (
   `id` int(11),
   `position_id` int(11),
   `branch_id` int(11),
+  `hire_date` char(40) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 LOCK TABLES `employees` WRITE;
-INSERT INTO `employees` VALUES (4,1,0);
-INSERT INTO `employees` VALUES (5,4,0);
+INSERT INTO `employees` VALUES (4,2,1,'01.01.2001');
+INSERT INTO `employees` VALUES (5,5,1,'01.01.2001');
 UNLOCK TABLES;

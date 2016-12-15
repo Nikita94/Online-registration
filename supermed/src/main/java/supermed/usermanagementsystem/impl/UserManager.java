@@ -35,12 +35,12 @@ public class UserManager extends Application {
     @GET
     public Response defaultePage() {
         java.net.URI location = null;
-            try {
-                location = new java.net.URI("./login");
-                return Response.temporaryRedirect(location).build();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+        try {
+            location = new java.net.URI("./login");
+            return Response.temporaryRedirect(location).build();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -58,7 +58,8 @@ public class UserManager extends Application {
                                @FormParam("password") String password) {
         User currentUser = (User) currentRequest.getAttribute("User");
         if (currentUser.getRole() == MANAGER) {
-            responseBuilder.respondWithStatusAndObject(Status.CONFLICT, "You haven't enough permissions");
+            responseBuilder.respondWithStatusAndObject(Status.CONFLICT, "You haven't enough " +
+                    "permissions");
         } else {
             UserData userData = UserData.newBuilder().setFirstName(first_name)
                     .setMiddleName(middle_name)
@@ -72,7 +73,8 @@ public class UserManager extends Application {
             User user = new User(userData, createRole(role));
             boolean wasExecuted = DataManager.createUser(user, password);
             if (!wasExecuted) {
-                return responseBuilder.respondWithStatusAndObject(Status.BAD_REQUEST, "Incorrect data");
+                return responseBuilder.respondWithStatusAndObject(Status.BAD_REQUEST, "Incorrect " +
+                        "data");
             }
         }
         return null;
@@ -90,7 +92,6 @@ public class UserManager extends Application {
         java.net.URI location = null;
         if (user != null) {
             currentRequest.getSession().setAttribute("User", user);
-            currentRequest.getSession().setAttribute("isAuthorized", Boolean.TRUE);
             try {
                 location = new java.net.URI("./users/" + user.getID());
                 return Response.seeOther(location).build();
@@ -113,7 +114,6 @@ public class UserManager extends Application {
     @Produces(MediaType.TEXT_HTML)
     public String logOut() {
         currentRequest.getSession().removeAttribute("User");
-        currentRequest.getSession().removeAttribute("isAuthorized");
         return PageWriter.printLoginPage();
     }
 
@@ -130,13 +130,13 @@ public class UserManager extends Application {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
     public Response updateUser(@PathParam("id") String id,
-                              @FormParam("password") String password,
-                              @FormParam("address") String address,
-                              @FormParam("contact_phone") String contact_phone) {
+                               @FormParam("password") String password,
+                               @FormParam("address") String address,
+                               @FormParam("contact_phone") String contact_phone) {
         User user = DataManager.getUserById(id);
         //User currentUser = (User) currentRequest.getAttribute("User");
         //if (user.getID().equals(currentUser.getID())) {
-            DataManager.updateInfoAboutYourself(id, password, address, contact_phone);
+        DataManager.updateInfoAboutYourself(id, password, address, contact_phone);
         java.net.URI location = null;
         try {
             location = new java.net.URI("./users/" + id);
@@ -159,7 +159,7 @@ public class UserManager extends Application {
     @Produces(MediaType.TEXT_HTML)
     public String getUser(@PathParam("id") String id) {
         try {
-            if (currentRequest.getSession().getAttribute("isAuthorized") != null) {
+            if (currentRequest.getSession().getAttribute("User") != null) {
                 return PageWriter.printUserProfilePage(DataManager.getUserById(id));
             }
         } catch (Exception e) {
@@ -174,7 +174,7 @@ public class UserManager extends Application {
     public String getEditForm(@PathParam("id") String id) {
         User user = DataManager.getUserById(id);
         try {
-            if (currentRequest.getSession().getAttribute("isAuthorized") != null) {
+            if (currentRequest.getSession().getAttribute("User") != null) {
                 return PageWriter.printEditForm(user);
             }
         } catch (Exception e) {

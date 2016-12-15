@@ -47,6 +47,8 @@ public class PageWriter {
         stringBuilder.append(HEADING);
         if (user.getRole().equals(Role.PATIENT)) {
             stringBuilder.append(insertUserMenu(user.getID()));
+        } else {
+            stringBuilder.append(insertUserMenu(user.getID()));
         }
         stringBuilder.append(getUserLastName(user));
         stringBuilder.append(getUserFirstName(user));
@@ -58,9 +60,14 @@ public class PageWriter {
         if (!user.getRole().equals(Role.PATIENT)) {
             stringBuilder.append(getEmployeeHireDate((Employee) user));
             stringBuilder.append(getEmployeePosition((Employee) user));
+            stringBuilder.append(getEmployeeBranch((Employee) user));
         }
         stringBuilder.append(ENDING);
         return stringBuilder.toString();
+    }
+
+    private static String getEmployeeBranch(Employee user) {
+        return " <tr><td>Адрес отделения</td><td>" + user.getBranchAddress() + "</td></tr > ";
     }
 
     private static String getUserFirstName(User user) {
@@ -136,7 +143,8 @@ public class PageWriter {
                 "консультации</button></tr><td></table>" + insertImage() +
                 "                <div class=\" col-md-9 col-lg-9 \"> \n" +
                 "                  <table class=\"table table-user-information\">\n" +
-                "                    <a href=\"http://localhost:8080/supermed-1.0/update_yourself/" + id + "\"><button type=\"button\" " +
+                "                    " +
+                "<a href=\"http://localhost:8080/supermed-1.0/update_yourself/" + id + "\"><button type=\"button\" " +
                 "class=\"shortButton\">Редактировать</button></a>";
     }
 
@@ -144,7 +152,8 @@ public class PageWriter {
         return " <div class=\"panel-body\">\n" +
                 "              <div class=\"row\">\n" +
                 "                <div class=\"col-md-3 col-lg-3 \" align=\"center\"> <img " +
-                "alt=\"User Pic\" src=\"http://fn41.n.f.f.unblog.fr/files/2011/04/anonyme.jpg\" class=\"img-circle " +
+                "alt=\"User Pic\" src=\"http://fn41.n.f.f.unblog.fr/files/2011/04/anonyme.jpg\" " +
+                "class=\"img-circle " +
                 "img-responsive\"> </div>\n" +
                 "                \n" +
                 "                \n" +
@@ -320,7 +329,8 @@ public class PageWriter {
                 "required>\n" +
                 "\n" +
                 "        <label><b>Password</b></label>\n" +
-                "        <input type=\"password\" placeholder=\"Enter Password\" name=\"password\" " +
+                "        <input type=\"password\" placeholder=\"Enter Password\" " +
+                "name=\"password\" " +
                 "required>\n" +
                 "\n" +
                 "        <button type=\"submit\">Login</button>\n" +
@@ -344,10 +354,12 @@ public class PageWriter {
                 "\n" +
                 "<form method=\"post\" action=\"\">\n" +
                 "  Адресс:<br>\n" +
-                "  <input type=\"text\" name=\"address\" value=\""+ user.getUserData().getAddress() +"\">\n" +
+                "  <input type=\"text\" name=\"address\" value=\"" + user.getUserData()
+                .getAddress() + "\">\n" +
                 "  <br>\n" +
                 "  Контактный телефон:<br>\n" +
-                "  <input type=\"text\" name=\"contact_phone\" value=\""+ user.getUserData().getPhoneNumber() +"\">\n" +
+                "  <input type=\"text\" name=\"contact_phone\" value=\"" + user.getUserData()
+                .getPhoneNumber() + "\">\n" +
                 "  <br>\n" +
                 "  Пароль:<br>\n" +
                 "  <input type=\"text\" name=\"password\" value=\"\">\n" +

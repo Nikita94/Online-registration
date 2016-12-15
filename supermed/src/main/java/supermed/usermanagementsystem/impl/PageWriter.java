@@ -292,7 +292,7 @@ public class PageWriter {
                 "<html>\n" +
                 "<body>\n" +
                 "\n" +
-                "<form action=\"\">\n" +
+                "<form method=\"post\" action=\"\">\n" +
                 "  Имя:<br>\n" +
                 "  <input type=\"text\" name=\"first_name\" value=\"\">\n" +
                 "  <br>\n" +

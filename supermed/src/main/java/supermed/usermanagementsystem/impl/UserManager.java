@@ -55,11 +55,6 @@ public class UserManager extends Application {
                                @FormParam("role") String role,
                                @FormParam("email") String email,
                                @FormParam("password") String password) {
-        User currentUser = (User) currentRequest.getAttribute("User");
-        if (currentUser.getRole() == MANAGER) {
-            responseBuilder.respondWithStatusAndObject(Status.CONFLICT, "You haven't enough " +
-                    "permissions");
-        } else {
             UserData userData = UserData.newBuilder().setFirstName(first_name)
                     .setMiddleName(middle_name)
                     .setLastName(last_name)
@@ -75,7 +70,14 @@ public class UserManager extends Application {
                 return responseBuilder.respondWithStatusAndObject(Status.BAD_REQUEST, "Incorrect " +
                         "data");
             }
-        }
+            else {
+                try {
+                    java.net.URI location = new java.net.URI("./users/" + user.getID());
+                    return Response.seeOther(location).build();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
         return null;
     }
 

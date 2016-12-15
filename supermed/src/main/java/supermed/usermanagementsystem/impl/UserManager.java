@@ -16,8 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URISyntaxException;
 
-import static supermed.usermanagementsystem.user.Role.MANAGER;
-import static supermed.usermanagementsystem.user.Role.createRole;
+import static supermed.usermanagementsystem.user.Role.*;
 
 /**
  * Created by Alexander on 24.11.2016.
@@ -160,7 +159,12 @@ public class UserManager extends Application {
     public String getUser(@PathParam("id") String id) {
         try {
             if (currentRequest.getSession().getAttribute("User") != null) {
-                return PageWriter.printUserProfilePage(DataManager.getUserById(id));
+                User currentUser = (User) currentRequest.getSession().getAttribute("User");
+                if (currentUser.getRole() != PATIENT) {
+                    return PageWriter.printUserProfilePage(DataManager.getUserById(id));
+                } else if (currentUser.getID().equals(id)) {
+                    return PageWriter.printUserProfilePage(DataManager.getUserById(id));
+                }
             }
         } catch (Exception e) {
 

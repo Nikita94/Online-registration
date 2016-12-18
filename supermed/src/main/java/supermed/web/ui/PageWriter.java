@@ -1,4 +1,4 @@
-package supermed.usermanagementsystem.impl;
+package supermed.web.ui;
 
 import supermed.datamanagementsystem.DataManager;
 import supermed.usermanagementsystem.user.Employee;
@@ -16,6 +16,8 @@ public class PageWriter {
             "<link rel=\"stylesheet\" href=\"https://code.jquery.com/mobile/1.4.5/jquery" +
             ".mobile-1.4.5.min.css\">\n" +
             "<script src=\"https://code.jquery.com/jquery-1.11.3.min.js\"></script>\n" +
+            "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min" +
+            ".js\"></script>\n" +
             "<script src=\"https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min" +
             ".js\"></script></head><body><div class=\"container\">\n" +
             "      <div class=\"row\">\n" +
@@ -132,11 +134,15 @@ public class PageWriter {
                 "\n" +
                 "    <div data-role=\"popup\" id=\"myPopup\" class=\"ui-content\" " +
                 "style=\"min-width:250px;\">\n" +
-                "      <form method=\"post\" action=\"\">\n" +
+                "      <form method=\"post\" action=\"./visits\">\n" +
                 "        <div>\n" +
                 "          <h3>Выберите день</h3>\n" +
-                "\t\t  <p>Желаемая дата приема: <input type=\"date\"></p>\n" + insertBranches() +
-                "        </div>\n" +
+                "\t\t  <p>Желаемая дата приема: <input name=\"dateOfVisit\" id=\"visitDate\" " +
+                "type=\"date\" ></p>\n" +
+                "<script>var m = moment().format(\"YYYY-MM-DD\");document.getElementById" +
+                "('visitDate').value = m;</script>" +
+                insertBranches() +
+                "        </div>\n<input type=\"submit\" data-inline=\"true\" value=\"Далее\">" +
                 "      </form>\n" +
                 "    </div>\n" +
                 "  </div>\n" +
@@ -155,7 +161,7 @@ public class PageWriter {
         } else {
             insertForm +=
                     "<a href=\"http://localhost:8080/supermed-1.0/update_yourself/" + user.getID() + "\"><button type=\"button\" " +
-                    "class=\"shortButton\">Редактировать</button></a>";
+                            "class=\"shortButton\">Редактировать</button></a>";
         }
         return insertForm;
     }
@@ -167,7 +173,7 @@ public class PageWriter {
         }
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("<p>Филиал");
-        stringBuilder.append("<select>");
+        stringBuilder.append("<select name=\"branch\" id=\"currentBranch\">");
         for (Map.Entry<String, String> entry : branches.entrySet()) {
             stringBuilder.append("<option value=\"").append(entry.getKey())
                     .append("\">").append(entry.getValue())
@@ -340,5 +346,9 @@ public class PageWriter {
                 "</body>\n" +
                 "</html>\n";
         return createUser;
+    }
+
+    public static String printScheduleForPatient(String date, String branchId) {
+        return "";
     }
 }

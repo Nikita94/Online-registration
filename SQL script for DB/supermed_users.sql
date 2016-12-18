@@ -108,3 +108,27 @@ LOCK TABLES `employees` WRITE;
 INSERT INTO `employees` VALUES (4,2,1,'01.01.2001');
 INSERT INTO `employees` VALUES (5,5,1,'01.01.2001');
 UNLOCK TABLES;
+
+
+
+DROP TABLE IF EXISTS `events`;
+CREATE TABLE `events` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11),
+  `branch_id` int(11),
+  `expected_start_date` char(40) NOT NULL,
+  `actual_start_date` char(40) NOT NULL,
+  `expected_end_date` char(40) NOT NULL,
+  `actual_end_date` char(40) NOT NULL,
+  `event_type` char(40) NOT NULL,
+  `status` char(40) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `visits`;
+CREATE TABLE `visits` (
+  `event_id` int(11) NOT NULL AUTO_INCREMENT,
+  `patient_id` int(11),
+  PRIMARY KEY (`event_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

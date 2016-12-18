@@ -92,6 +92,13 @@ public class RestApplication extends Application {
                 return responseBuilder.respondWithStatusAndObject(Response.Status.BAD_REQUEST,
                         "Incorrect " +
                                 "data");
+            } else {
+                try {
+                    java.net.URI location = new java.net.URI("./users/" + user.getID());
+                    return Response.seeOther(location).build();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;

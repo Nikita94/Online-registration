@@ -187,8 +187,8 @@ public class RestApplication extends Application {
     @Produces(MediaType.TEXT_HTML)
     public String getUser(@PathParam("id") String id) {
         try {
-            if (currentRequest.getSession().getAttribute("User") != null) {
-                User currentUser = (User) currentRequest.getSession().getAttribute("User");
+            User currentUser = (User) currentRequest.getSession().getAttribute("User");
+            if (currentUser != null) {
                 if (currentUser.getRole() != PATIENT) {
                     return pageWriter.printUserProfilePage(userManager.getUserById(id));
                 } else if (currentUser.getID().equals(id)) {
@@ -207,8 +207,13 @@ public class RestApplication extends Application {
     public String getEditForm(@PathParam("id") String id) {
         User user = userManager.getUserById(id);
         try {
-            if (currentRequest.getSession().getAttribute("User") != null) {
-                return pageWriter.printEditForm(user);
+            User currentUser = (User) currentRequest.getSession().getAttribute("User");
+            if (currentUser != null) {
+                if (currentUser.getRole() != PATIENT && currentUser.getRole() != DOCTOR) {
+                    return pageWriter.printEditForm(user);
+                } else if (currentUser.getID().equals(id)) {
+                    return pageWriter.printEditForm(user);
+                }
             }
         } catch (Exception e) {
 

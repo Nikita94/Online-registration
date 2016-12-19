@@ -17,15 +17,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URISyntaxException;
 
-import static supermed.usermanagementsystem.user.Role.MANAGER;
-import static supermed.usermanagementsystem.user.Role.PATIENT;
-import static supermed.usermanagementsystem.user.Role.createRole;
+import static supermed.usermanagementsystem.user.Role.*;
 
 /**
  * Created by Alexander on 18.12.2016.
  */
 @Path("/")
 public class RestApplication extends Application {
+
+    UserManager userManager = new UserManager();
+    DataManager dataManager = new DataManager();
+    PageWriter pageWriter = new PageWriter();
+
     @Context
     HttpServletRequest currentRequest;
     private ResponseBuilderImpl responseBuilder = new ResponseBuilderImpl();
@@ -39,7 +42,7 @@ public class RestApplication extends Application {
             String branchID) {
         currentRequest.getSession().setAttribute("VisitDay", visitDate);
         currentRequest.getSession().setAttribute("VisitBranchID", branchID);
-        return PageWriter.printScheduleForPatient(DataManager.getMedicalPositions(branchID));
+        return pageWriter.printScheduleForPatient(dataManager.getMedicalPositions(branchID));
     }
 
     @GET
@@ -89,7 +92,7 @@ public class RestApplication extends Application {
                     .setLogin(email)
                     .build();
             User user = new User(userData, createRole(role));
-            boolean wasExecuted = UserManager.createUser(user, password);
+            boolean wasExecuted = userManager.createUser(user, password);
             if (!wasExecuted) {
                 return responseBuilder.respondWithStatusAndObject(Response.Status.BAD_REQUEST,
                         "Incorrect data");
@@ -113,7 +116,7 @@ public class RestApplication extends Application {
     public Response logIn(@FormParam("login") String login,
                           @FormParam("password") String password) throws
             ResourceNotFoundException, NamingException {
-        User user = UserManager.logIn(login, password);
+        User user = userManager.logIn(login, password);
         java.net.URI location = null;
         if (user != null) {
             currentRequest.getSession().setAttribute("User", user);
@@ -131,7 +134,7 @@ public class RestApplication extends Application {
     @Path("/login")
     @Produces(MediaType.TEXT_HTML)
     public String logIn() {
-        return PageWriter.printLoginPage();
+        return pageWriter.printLoginPage();
     }
 
     @GET
@@ -139,7 +142,7 @@ public class RestApplication extends Application {
     @Produces(MediaType.TEXT_HTML)
     public String logOut() {
         currentRequest.getSession().removeAttribute("User");
-        return PageWriter.printLoginPage();
+        return pageWriter.printLoginPage();
     }
 
 
@@ -147,7 +150,7 @@ public class RestApplication extends Application {
     @Path("/create_user")
     @Produces(MediaType.TEXT_HTML)
     public String createUser() {
-        return PageWriter.printCreateUserPage();
+        return pageWriter.printCreateUserPage();
     }
 
     @POST
@@ -158,10 +161,10 @@ public class RestApplication extends Application {
                                @FormParam("password") String password,
                                @FormParam("address") String address,
                                @FormParam("contact_phone") String contact_phone) {
-        User user = UserManager.getUserById(id);
+        User user = userManager.getUserById(id);
         //User currentUser = (User) currentRequest.getAttribute("User");
         //if (user.getID().equals(currentUser.getID())) {
-        UserManager.updateInfoAboutYourself(id, password, address, contact_phone);
+        userManager.updateInfoAboutYourself(id, password, address, contact_phone);
         java.net.URI location = null;
         try {
             location = new java.net.URI("./users/" + id);
@@ -187,29 +190,29 @@ public class RestApplication extends Application {
             if (currentRequest.getSession().getAttribute("User") != null) {
                 User currentUser = (User) currentRequest.getSession().getAttribute("User");
                 if (currentUser.getRole() != PATIENT) {
-                    return PageWriter.printUserProfilePage(UserManager.getUserById(id));
+                    return pageWriter.printUserProfilePage(userManager.getUserById(id));
                 } else if (currentUser.getID().equals(id)) {
-                    return PageWriter.printUserProfilePage(UserManager.getUserById(id));
+                    return pageWriter.printUserProfilePage(userManager.getUserById(id));
                 }
             }
         } catch (Exception e) {
 
         }
-        return PageWriter.printErrorPage();
+        return pageWriter.printErrorPage();
     }
 
     @GET
     @Path("/update_yourself/{id}")
     @Produces(MediaType.TEXT_HTML)
     public String getEditForm(@PathParam("id") String id) {
-        User user = UserManager.getUserById(id);
+        User user = userManager.getUserById(id);
         try {
             if (currentRequest.getSession().getAttribute("User") != null) {
-                return PageWriter.printEditForm(user);
+                return pageWriter.printEditForm(user);
             }
         } catch (Exception e) {
 
         }
-        return PageWriter.printErrorPage();
+        return pageWriter.printErrorPage();
     }
 }

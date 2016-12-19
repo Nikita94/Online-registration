@@ -11,6 +11,9 @@ import java.util.Map;
  * Created by Alexander on 11.12.2016.
  */
 public class PageWriter {
+
+    DataManager dataManager = new DataManager();
+
     private static final String HEADING = "<html><head><meta name=\"viewport\" " +
             "content=\"width=device-width, initial-scale=1\">\n" +
             "<link rel=\"stylesheet\" href=\"https://code.jquery.com/mobile/1.4.5/jquery" +
@@ -46,7 +49,7 @@ public class PageWriter {
             "      </div>\n" +
             "    </div></body></html>";
 
-    public static String printUserProfilePage(User user) {
+    public String printUserProfilePage(User user) {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HEADING);
@@ -125,7 +128,7 @@ public class PageWriter {
         return stringBuilder.toString();
     }
 
-    private static String insertUserMenu(User user) {
+    private String insertUserMenu(User user) {
         String insertForm = "   <table align=\"right\">\n" +
                 " <tr><td>  \n" +
                 " <div data-role=\"main\" class=\"ui-content\" align=\"right\">\n" +
@@ -166,8 +169,8 @@ public class PageWriter {
         return insertForm;
     }
 
-    private static String insertBranches() {
-        Map<String, String> branches = DataManager.getBranches();
+    private String insertBranches() {
+        Map<String, String> branches = dataManager.getBranches();
         if (branches == null) {
             return "";
         }

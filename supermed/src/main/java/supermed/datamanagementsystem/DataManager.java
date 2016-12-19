@@ -13,26 +13,24 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Created by nikita on 08.12.2016.
  */
-public final class DataManager {
+public class DataManager {
 
-    private static Connection connection;
-    private static Statement statement;
-    private static ResultSet resultSet;
-    private static InitialContext initialContext;
-    private static DataSource dataSource;
+    private Connection connection;
+    private Statement statement;
+    private ResultSet resultSet;
+    private InitialContext initialContext;
+    private DataSource dataSource;
 
-    private DataManager() {
+    public DataManager() {
     }
 
-    private static void openConnection() {
+    private void openConnection() {
         // opening database connection to MySQL server
         try {
             initialContext = new InitialContext();
@@ -47,7 +45,7 @@ public final class DataManager {
         }
     }
 
-    private static void closeConnection() throws SQLException, NamingException {
+    private void closeConnection() throws SQLException, NamingException {
         if (resultSet != null)
             resultSet.close();
         if (statement != null)
@@ -59,7 +57,7 @@ public final class DataManager {
     }
 
 
-    public static User getUserByLogin(String login) {
+    public User getUserByLogin(String login) {
         openConnection();
         try {
             resultSet = statement.executeQuery("select * from users where login = '" + login + "'");
@@ -78,7 +76,7 @@ public final class DataManager {
         return null;
     }
 
-    public static User logIn(String login, String password) {
+    public User logIn(String login, String password) {
         openConnection();
         try {
             resultSet = statement.executeQuery("select * from users where login = '" + login +
@@ -98,7 +96,7 @@ public final class DataManager {
         return null;
     }
 
-    public static User getUserById(String id) {
+    public User getUserById(String id) {
         openConnection();
         try {
             resultSet = statement.executeQuery("select * from users where id = " + id);
@@ -117,7 +115,7 @@ public final class DataManager {
         return null;
     }
 
-    public static Map<String, String> getMedicalPositions(String branchId) {
+    public Map<String, String> getMedicalPositions(String branchId) {
         openConnection();
         try {
             resultSet = statement.executeQuery("select * from positions where is_medical = 1 " +
@@ -142,7 +140,7 @@ public final class DataManager {
         return null;
     }
 
-    private static User constructUser() {
+    private User constructUser() {
         User user = new User();
         try {
             if (resultSet.next()) {
@@ -170,7 +168,7 @@ public final class DataManager {
         return null;
     }
 
-    private static Employee constructEmployee(User user) {
+    private Employee constructEmployee(User user) {
 
         try {
             resultSet = statement.executeQuery("select e.hire_date, b.address, p.name from " +
@@ -190,7 +188,7 @@ public final class DataManager {
         return null;
     }
 
-    public static boolean createUser(User user, String password) {
+    public boolean createUser(User user, String password) {
         UserData userData = user.getUserData();
         String query = "INSERT INTO `users` VALUES (NULL,'" +
                 userData.getLogin() + "','" +
@@ -205,7 +203,7 @@ public final class DataManager {
         return executeUpdateQuery(query);
     }
 
-    public static boolean updateInfoAboutYourself(String id, String password, String address,
+    public boolean updateInfoAboutYourself(String id, String password, String address,
                                                   String contact_phone) {
         String query = "UPDATE users SET password = \"" +
                 password + "\", address = \"" +
@@ -214,7 +212,7 @@ public final class DataManager {
         return executeUpdateQuery(query);
     }
 
-    private static boolean executeUpdateQuery(String query) {
+    private boolean executeUpdateQuery(String query) {
         openConnection();
         try {
             if (statement.executeUpdate(query) != 0)
@@ -233,7 +231,7 @@ public final class DataManager {
         return false;
     }
 
-    public static Map<String, String> getBranches() {
+    public Map<String, String> getBranches() {
         openConnection();
         try {
             resultSet = statement.executeQuery("select * from branches");
@@ -257,7 +255,7 @@ public final class DataManager {
 
     }
 
-    public static Map<String, String> getSchedule(String day, String branchId, String positionID) {
+    public Map<String, String> getSchedule(String day, String branchId, String positionID) {
         openConnection();
         try {
             resultSet = statement.executeQuery("select * from events where = 1 " +

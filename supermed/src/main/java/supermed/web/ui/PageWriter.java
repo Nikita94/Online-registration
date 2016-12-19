@@ -348,7 +348,21 @@ public class PageWriter {
         return createUser;
     }
 
-    public static String printScheduleForPatient(String date, String branchId) {
-        return "";
+    public static String printScheduleForPatient(Map<String, String> specialitites) {
+        StringBuilder stringBuilder = new StringBuilder();
+        String heading = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<body>\n" +
+                "\n" +
+                "<select onchange=\"this.options[this.selectedIndex].value && (window.location+=" +
+                "this.options[this.selectedIndex].value);\">" +
+                "   <option value=\"\">Выберите специальность</option>\n";
+        stringBuilder.append(heading);
+        for (Map.Entry<String, String> speciality : specialitites.entrySet()) {
+            stringBuilder.append("<option value=\"/").append(speciality.getKey())
+                    .append("\">").append(speciality.getValue()).append("</option>\n");
+        }
+        stringBuilder.append("</select>\n</body>\n</html>\n ");
+        return stringBuilder.toString();
     }
 }

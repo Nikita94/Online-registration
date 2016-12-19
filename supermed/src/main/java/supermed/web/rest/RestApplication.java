@@ -1,5 +1,6 @@
 package supermed.web.rest;
 
+import supermed.datamanagementsystem.DataManager;
 import supermed.httpexception.ResourceNotFoundException;
 import supermed.httpexception.ResponseBuilderImpl;
 import supermed.usermanagementsystem.UserManager;
@@ -31,20 +32,21 @@ public class RestApplication extends Application {
 
     @POST
     @Path("/users/visits")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
     public String getSchedule(@FormParam("dateOfVisit") String visitDate, @FormParam
             ("branch")
             String branchID) {
         currentRequest.getSession().setAttribute("VisitDay", visitDate);
         currentRequest.getSession().setAttribute("VisitBranchID", branchID);
-        return "Stub String for schedule on  " + visitDate + " and branchID=" + branchID;
+        return PageWriter.printScheduleForPatient(DataManager.getMedicalPositions(branchID));
     }
 
     @GET
-    @Path("/users/visits")
+    @Path("/users/visits/{specID}")
     @Produces(MediaType.TEXT_HTML)
-    public String getScheduleForSpeciality() {
-        return "";
+    public String getScheduleForSpeciality(@PathParam("specID") String id) {
+        return null;
     }
 
     @GET
@@ -90,8 +92,7 @@ public class RestApplication extends Application {
             boolean wasExecuted = UserManager.createUser(user, password);
             if (!wasExecuted) {
                 return responseBuilder.respondWithStatusAndObject(Response.Status.BAD_REQUEST,
-                        "Incorrect " +
-                                "data");
+                        "Incorrect data");
             } else {
                 try {
                     java.net.URI location = new java.net.URI("./users/" + user.getID());

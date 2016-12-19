@@ -117,16 +117,17 @@ public final class DataManager {
         return null;
     }
 
-    public static List<String> getMedicalPositions(String branchId) {
+    public static Map<String, String> getMedicalPositions(String branchId) {
         openConnection();
         try {
-            resultSet = statement.executeQuery("select name from positions where is_medical = 1 " +
+            resultSet = statement.executeQuery("select * from positions where is_medical = 1 " +
                     "and id in (select position_id from employees where branch_id =" + branchId +
                     " ) ");
-            ArrayList<String> medicalPostitions = new ArrayList<String>();
+            Map<String, String> medicalPostitions = new HashMap<String, String>();
             while (resultSet.next()) {
-                medicalPostitions.add(resultSet.getString("name"));
+                medicalPostitions.put(resultSet.getString("id"), resultSet.getString("name"));
             }
+            return medicalPostitions;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -238,7 +239,7 @@ public final class DataManager {
             resultSet = statement.executeQuery("select * from branches");
             Map<String, String> output = new HashMap<String, String>();
             while (resultSet.next()) {
-                output.put(resultSet.getString("id"),resultSet.getString("address"));
+                output.put(resultSet.getString("id"), resultSet.getString("address"));
             }
             return output;
         } catch (SQLException e) {
@@ -254,5 +255,30 @@ public final class DataManager {
         }
         return null;
 
+    }
+
+    public static Map<String, String> getSchedule(String day, String branchId, String positionID) {
+        openConnection();
+        try {
+            resultSet = statement.executeQuery("select * from events where = 1 " +
+                    "and id in (select position_id from employees where branch_id = " + branchId +
+                    " )");
+            Map<String, String> medicalPostitions = new HashMap<String, String>();
+            while (resultSet.next()) {
+                medicalPostitions.put(resultSet.getString("id"), resultSet.getString("name"));
+            }
+            return medicalPostitions;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }

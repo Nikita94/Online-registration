@@ -1,16 +1,20 @@
 package supermed.consultancysystem;
 
 import supermed.statisticsframework.Event;
+import supermed.statisticsframework.Schedule;
 
 /**
  * Created by Alexander on 14.12.2016.
  */
 public class Visit extends Event {
-    private String doctorID;
+
+    private String appointment;
+    private String anamnesis;
+    private String diagnosis;
     private String patientID;
-    public Visit(String doctorId, String patientId, String start, String end) {
-        super(start, end);
-        this.doctorID = doctorId;
+
+    public Visit(String eventID, String doctorId, String patientId, String start, String end) {
+        super(eventID, doctorId, start, end);
         this.patientID = patientId;
     }
 
@@ -29,4 +33,5 @@ public class Visit extends Event {
     public void setActualEndDate(String endDate) {
 
     }
+
 }

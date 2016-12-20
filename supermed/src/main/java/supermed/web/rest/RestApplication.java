@@ -6,6 +6,7 @@ import supermed.httpexception.ResponseBuilderImpl;
 import supermed.usermanagementsystem.UserManager;
 import supermed.usermanagementsystem.user.User;
 import supermed.usermanagementsystem.user.UserData;
+import supermed.web.EmailSender;
 import supermed.web.ui.PageWriter;
 
 import javax.naming.NamingException;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import static supermed.usermanagementsystem.user.Role.*;
 
@@ -28,6 +30,7 @@ public class RestApplication extends Application {
     UserManager userManager = new UserManager();
     DataManager dataManager = new DataManager();
     PageWriter pageWriter = new PageWriter();
+    EmailSender emailSender = new EmailSender();
 
     @Context
     HttpServletRequest currentRequest;
@@ -37,19 +40,21 @@ public class RestApplication extends Application {
     @Path("/users/visits")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
-    public String getSchedule(@FormParam("dateOfVisit") String visitDate, @FormParam
+    public String getSpecChooser(@FormParam("dateOfVisit") String visitDate, @FormParam
             ("branch")
             String branchID) {
         currentRequest.getSession().setAttribute("VisitDay", visitDate);
         currentRequest.getSession().setAttribute("VisitBranchID", branchID);
-        return pageWriter.printScheduleForPatient(dataManager.getMedicalPositions(branchID));
+        return pageWriter.printSpecChooserForPatient(dataManager.getMedicalPositions(branchID));
     }
 
     @GET
     @Path("/users/visits/{specID}")
     @Produces(MediaType.TEXT_HTML)
-    public String getScheduleForSpeciality(@PathParam("specID") String id) {
-        return null;
+    public String getScheduleForSpeciality(@PathParam("specID") String specID) {
+        String visitDay = (String) currentRequest.getSession().getAttribute("VisitDay");
+        String branchID = (String) currentRequest.getSession().getAttribute("VisitBranchID");
+        return pageWriter.printShecduleForUser(dataManager.getSchedule(visitDay, branchID, specID));
     }
 
     @GET
@@ -65,8 +70,9 @@ public class RestApplication extends Application {
     }
 
     @POST
-    @Path("/create_user")
+    @Path("/create_patient")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_HTML)
     public Response createUser(@FormParam("first_name") String first_name,
                                @FormParam("middle_name") String middle_name,
                                @FormParam("last_name") String last_name,
@@ -76,8 +82,8 @@ public class RestApplication extends Application {
                                @FormParam("role") String role,
                                @FormParam("email") String email,
                                @FormParam("password") String password) {
-        User currentUser = (User) currentRequest.getAttribute("User");
-        if (currentUser.getRole() == MANAGER) {
+        User currentUser = (User) currentRequest.getSession().getAttribute("User");
+        if (currentUser.getRole() != MANAGER) {
             responseBuilder.respondWithStatusAndObject(Response.Status.CONFLICT, "You haven't " +
                     "enough " +
                     "permissions");
@@ -92,13 +98,20 @@ public class RestApplication extends Application {
                     .setLogin(email)
                     .build();
             User user = new User(userData, createRole(role));
-            boolean wasExecuted = userManager.createUser(user, password);
-            if (!wasExecuted) {
+            String id = userManager.createUser(user, password);
+            if (id.equals("")) {
                 return responseBuilder.respondWithStatusAndObject(Response.Status.BAD_REQUEST,
                         "Incorrect data");
             } else {
                 try {
-                    java.net.URI location = new java.net.URI("./users/" + user.getID());
+                    emailSender.send("Добро пожаловать в клинику SuperMed!",
+                            "Ваш аккаунт пациента успешно создан!\n\n" +
+                            "Спасибо за то, что к нам присоединились\n" +
+                            "Ваш логин и пароль для входа в систему: \n" +
+                                    email + "\n" +
+                            password +
+                                    "\n\n С уважением, команда Supermed", email);
+                    java.net.URI location = new java.net.URI("./users/" + id);
                     return Response.seeOther(location).build();
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
@@ -147,10 +160,33 @@ public class RestApplication extends Application {
 
 
     @GET
-    @Path("/create_user")
+    @Path("/create_patient")
     @Produces(MediaType.TEXT_HTML)
     public String createUser() {
         return pageWriter.printCreateUserPage();
+    }
+
+    @GET
+    @Path("/show_profiles")
+    @Produces(MediaType.TEXT_HTML)
+    public String showProfiles() {
+        User currentUser = (User) currentRequest.getSession().getAttribute("User");
+        if (currentUser.getRole() != MANAGER) {
+            responseBuilder.respondWithStatusAndObject(Response.Status.CONFLICT, "You haven't " +
+                    "enough " +
+                    "permissions");
+        } else {
+            List<User> userList = dataManager.getUsers();
+            return pageWriter.printUsersProfile(userList);
+        }
+        return null;
+    }
+
+    @GET
+    @Path("/create_employee")
+    @Produces(MediaType.TEXT_HTML)
+    public String createDoctor() {
+        return pageWriter.printCreateEmployeePage();
     }
 
     @POST
@@ -165,6 +201,9 @@ public class RestApplication extends Application {
         //User currentUser = (User) currentRequest.getAttribute("User");
         //if (user.getID().equals(currentUser.getID())) {
         userManager.updateInfoAboutYourself(id, password, address, contact_phone);
+        emailSender.send("Изменение контактных данных",
+                "Ваши контактные данные были успешно изменены." +
+                        "\n\n С уважением, команда Supermed", user.getUserData().getEmail());
         java.net.URI location = null;
         try {
             location = new java.net.URI("./users/" + id);
@@ -175,20 +214,14 @@ public class RestApplication extends Application {
         //}
         return null;
     }
-//
-    //@DELETE
-    //@Path("/{id}")
-    //public boolean deleteUser(User user) {
-    //    return false;
-    //}
 
     @GET
     @Path("/users/{id}")
     @Produces(MediaType.TEXT_HTML)
     public String getUser(@PathParam("id") String id) {
         try {
-            if (currentRequest.getSession().getAttribute("User") != null) {
-                User currentUser = (User) currentRequest.getSession().getAttribute("User");
+            User currentUser = (User) currentRequest.getSession().getAttribute("User");
+            if (currentUser != null) {
                 if (currentUser.getRole() != PATIENT) {
                     return pageWriter.printUserProfilePage(userManager.getUserById(id));
                 } else if (currentUser.getID().equals(id)) {
@@ -202,13 +235,39 @@ public class RestApplication extends Application {
     }
 
     @GET
+    @Path("/remove/{id}")
+    @Produces(MediaType.TEXT_HTML)
+    public String removeUser(@PathParam("id") String id) {
+        try {
+            User currentUser = (User) currentRequest.getSession().getAttribute("User");
+            if (currentUser.getRole() == MANAGER) {
+                User user = dataManager.getUserById(id);
+                dataManager.removeUser(id);
+                emailSender.send("Спасибоза сотрудничество!\n",
+                        "Спасибо за то, что были нашим клиентов все это время!" +
+                                "\n\n С уважением, команда Supermed", user.getUserData().getEmail());
+                List<User> userList = dataManager.getUsers();
+                return pageWriter.printUsersProfile(userList);
+            }
+        } catch (Exception e) {
+
+        }
+        return pageWriter.printErrorPage();
+    }
+
+    @GET
     @Path("/update_yourself/{id}")
     @Produces(MediaType.TEXT_HTML)
     public String getEditForm(@PathParam("id") String id) {
         User user = userManager.getUserById(id);
         try {
-            if (currentRequest.getSession().getAttribute("User") != null) {
-                return pageWriter.printEditForm(user);
+            User currentUser = (User) currentRequest.getSession().getAttribute("User");
+            if (currentUser != null) {
+                if (currentUser.getRole() != PATIENT && currentUser.getRole() != DOCTOR) {
+                    return pageWriter.printEditForm(user);
+                } else if (currentUser.getID().equals(id)) {
+                    return pageWriter.printEditForm(user);
+                }
             }
         } catch (Exception e) {
 

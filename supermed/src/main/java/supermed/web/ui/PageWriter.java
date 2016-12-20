@@ -1,10 +1,15 @@
 package supermed.web.ui;
 
 import supermed.datamanagementsystem.DataManager;
+import supermed.statisticsframework.Event;
+import supermed.statisticsframework.Schedule;
 import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
+import supermed.usermanagementsystem.user.UserData;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -157,8 +162,12 @@ public class PageWriter {
                 "                  <table class=\"table table-user-information\">\n" +
                 "                    ";
         if (user.getRole() == Role.MANAGER) {
-            insertForm += "<a href=\"../create_user\"><button type=\"button\" " +
-                    "class=\"shortButton\">Создать</button></a>" +
+            insertForm += "<a href=\"../create_patient\"><button type=\"button\" " +
+                    "class=\"shortButton\">Создать пациента</button></a>" +
+                    "<a href=\"../create_employee\"><button type=\"button\" " +
+                    "class=\"shortButton\">Создать работника</button></a>" +
+                    "<a href=\"../show_profiles\"><button type=\"button\" " +
+                    "class=\"shortButton\">Просмотр профилей</button></a>" +
                     "<a href=\"http://localhost:8080/supermed-1.0/update_yourself/" + user.getID() + "\"><button type=\"button\" " +
                     "class=\"shortButton\">Редактировать</button></a>";
         } else {
@@ -351,7 +360,45 @@ public class PageWriter {
         return createUser;
     }
 
-    public static String printScheduleForPatient(Map<String, String> specialitites) {
+    public static String printCreateEmployeePage() {
+        String createUser = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<body>\n" +
+                "\n" +
+                "<form method=\"post\" action=\"\">\n" +
+                "  Имя:<br>\n" +
+                "  <input type=\"text\" name=\"first_name\" value=\"\">\n" +
+                "  <br>\n" +
+                "   Отчество:<br>\n" +
+                "  <input type=\"text\" name=\"middle_name\" value=\"\">\n" +
+                "  <br>Фамилия:<br>\n" +
+                "  <input type=\"text\" name=\"last_name\" value=\"\">\n" +
+                "  <br>Дата рождения:<br>\n" +
+                "  <input type=\"text\" name=\"birth_date\" value=\"\">\n" +
+                "  <br>Адрес:<br>\n" +
+                "  <input type=\"text\" name=\"address\" value=\"\">\n" +
+                "  <br>Телефон:<br>\n" +
+                "  <input type=\"text\" name=\"contact_phone\" value=\"\">\n" +
+                "  <br>Роль:<br>\n" +
+                "  <input type=\"text\" name=\"role\" value=\"\">\n" +
+                "  <br>E-mail:<br>\n" +
+                "  <input type=\"text\" name=\"email\" value=\"\">\n" +
+                "  <br>Позиция:<br>\n" +
+                "  <input type=\"text\" name=\"position\" value=\"\">\n" +
+                "  <br>Отделении клиники:<br>\n" +
+                "  <input type=\"text\" name=\"branch\" value=\"\">\n" +
+                "  <br>Пароль:<br>\n" +
+                "  <input type=\"text\" name=\"password\" value=\"\">\n" +
+                "  <br>\n" +
+                "  <input type=\"submit\" value=\"Создать\">\n" +
+                "</form> \n" +
+                "\n" +
+                "</body>\n" +
+                "</html>\n";
+        return createUser;
+    }
+
+    public static String printSpecChooserForPatient(Map<String, String> specialitites) {
         StringBuilder stringBuilder = new StringBuilder();
         String heading = "<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -367,5 +414,86 @@ public class PageWriter {
         }
         stringBuilder.append("</select>\n</body>\n</html>\n ");
         return stringBuilder.toString();
+    }
+
+    public String printShecduleForUser(List<Schedule> schedules) {
+        String heading = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<body><table style=\"width:100%\">\n<tr><th>Время</th>";
+        String ending = "</table>\n" +
+                "\n" +
+                "</body>\n" +
+                "</html>\n";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(heading);
+        if (schedules == null) {
+            schedules = new LinkedList<Schedule>();
+        }
+        for (Schedule s : schedules) {
+            stringBuilder.append("<th>").append(s.getEmployee().getUserData().getLastName())
+                    .append(" ").append(s.getEmployee().getUserData().getFirstName())
+                    .append(" ").append(s.getEmployee().getUserData().getMiddleName())
+                    .append("</th>\n");
+        }
+        stringBuilder.append("</tr>");
+        for (int i = 8; i < 12; i++) {
+            stringBuilder.append("<tr>");
+            stringBuilder.append("<td>" + i + " - " + (i + 1) + "</td>");
+            for (Schedule s : schedules) {
+                if (isAlreadyBooked(i, s.getEvents())) {
+                    stringBuilder.append("<td></td>");
+                } else {
+                    stringBuilder.append("<td><button onClick=\"javascript:window.location" +
+                            ".href=''\">Записаться</button></td>");
+                }
+            }
+
+            stringBuilder.append("</tr>");
+        }
+        for (int i = 13; i < 17; i++) {
+            stringBuilder.append("<tr>");
+            stringBuilder.append("<td>" + i + " - " + (i + 1) + "</td>");
+            for (Schedule s : schedules) {
+                if (isAlreadyBooked(i, s.getEvents())) {
+                    stringBuilder.append("<td></td>");
+                } else {
+                    stringBuilder.append("<td><button onClick=\"javascript:window.location" +
+                            ".href=''\">Записаться</button></td>");
+                }
+            }
+
+            stringBuilder.append("</tr>");
+        }
+        stringBuilder.append(ending);
+        return stringBuilder.toString();
+    }
+
+    private boolean isAlreadyBooked(int hour, List<Event> events) {
+        return false;
+    }
+
+    public String printUsersProfile(List<User> userList) {
+        String page = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<body>\n";
+        for (User user : userList) {
+            UserData userData = user.getUserData();
+            page += "<div >\n" +
+                    "<span>\n" + userData.getFirstName() + " " + userData.getMiddleName() + " "
+                    + userData.getLastName() + "</span>\n" +
+                    "<a href=\"/supermed-1.0/users/" + user.getID() + "\"><button type=\"button\"" +
+                    " " +
+                    "class=\"\">Смотреть и редактировать</button></a>" +
+                    "<a href=\"/supermed-1.0/remove/" + user.getID() + "\"><button " +
+                    "type=\"button\" " +
+                    "class=\"\">Удалить</button></a>" +
+                    "</div >\n" +
+                    "</br >\n" +
+                    "</br >\n";
+        }
+        page += "\n" +
+                "</body>\n" +
+                "</html>\n";
+        return page;
     }
 }

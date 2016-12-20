@@ -1,11 +1,9 @@
 package supermed.usermanagementsystem.user;
 
 
-/**
- * Created by Alexander on 22.11.2016.
- */
+import java.io.Serializable;
 
-public class UserData {
+public class UserData implements Serializable {
 
     private String email;
     private String firstName;

@@ -32,7 +32,7 @@ CREATE TABLE `users` (
   `middle_name` char(40) NOT NULL,
   `last_name` char(40) NOT NULL,
   `birth_date` char(40) NOT NULL,
-  `address` char(40) NOT NULL,
+  `address` char(60) NOT NULL,
   `contact_phone` char(40) NOT NULL,
   `role` char(40) NOT NULL,
   PRIMARY KEY (`id`)
@@ -130,5 +130,8 @@ DROP TABLE IF EXISTS `visits`;
 CREATE TABLE `visits` (
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
   `patient_id` int(11),
+  `anamnesis` TEXT,
+  `diagmosis` TEXT,
+  `appointment` TEXT,
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

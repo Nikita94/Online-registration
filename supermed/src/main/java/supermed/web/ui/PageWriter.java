@@ -2,6 +2,7 @@ package supermed.web.ui;
 
 import supermed.datamanagementsystem.DataManager;
 import supermed.statisticsframework.Event;
+import supermed.statisticsframework.EventStatus;
 import supermed.statisticsframework.Schedule;
 import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
@@ -443,8 +444,11 @@ public class PageWriter {
                 if (isAlreadyBooked(i, s.getEvents())) {
                     stringBuilder.append("<td></td>");
                 } else {
-                    stringBuilder.append("<td><button onClick=\"javascript:window.location" +
-                            ".href=''\">Записаться</button></td>");
+                    stringBuilder.append("<td><button onClick=\"javascript:window" +
+                            ".location='../enlist?doctorID=" + s.getEmployee().getID() +
+                            "&startTime=" + (i > 9 ? "" : "0") + i + "-00&endTime=" + (i > 8 ? ""
+                            : "0") + (i + 1) +
+                            "-00'\">Записаться</button></td>");
                 }
             }
 
@@ -457,8 +461,13 @@ public class PageWriter {
                 if (isAlreadyBooked(i, s.getEvents())) {
                     stringBuilder.append("<td></td>");
                 } else {
-                    stringBuilder.append("<td><button onClick=\"javascript:window.location" +
-                            ".href=''\">Записаться</button></td>");
+                    {
+                        stringBuilder.append("<td><button onClick=\"javascript:window" +
+                                ".location='../enlist?doctorID=" + s.getEmployee().getID() +
+                                "&startTime=" + (i > 9 ? "" : "0") + i + "-00&endTime=" + (i > 8
+                                ? "" : "0") + (i + 1) +
+                                "-00'\">Записаться</button></td>");
+                    }
                 }
             }
 
@@ -469,6 +478,43 @@ public class PageWriter {
     }
 
     private boolean isAlreadyBooked(int hour, List<Event> events) {
+        String expectedEventStartTime;
+        String expectedEventEndTime;
+        String actualEventStartTime;
+        String actualEventEndTime;
+        String startHour = (hour > 9 ? "" : "0") + hour;
+        String endHour = (hour > 8 ? "" : "0") + hour + 1;
+        for (Event event : events) {
+            expectedEventStartTime = event.getExpectedStartTime().substring(0, 2);
+            expectedEventEndTime = event.getExpectedEndTime().substring(0, 2);
+            actualEventStartTime = event.getActualStartTime().substring(0, 2);
+            actualEventEndTime = event.getActualEndTime().substring(0, 2);
+            if (event.getStatus().equals(EventStatus.PLANNED)) {
+                if ((expectedEventStartTime.compareTo(startHour) > 0) && (expectedEventEndTime
+                        .compareTo(endHour) < 0)) {
+                    return true;
+                }
+                if ((expectedEventStartTime.compareTo(startHour) < 0) && (expectedEventEndTime
+                        .compareTo(endHour) > 0)) {
+                    return true;
+                }
+                if ((expectedEventStartTime.compareTo(startHour) < 0) && (expectedEventEndTime
+                        .compareTo(endHour) < 0) && (expectedEventEndTime
+                        .compareTo(startHour) > 0)) {
+                    return true;
+                }
+                if ((expectedEventStartTime.compareTo(startHour) > 0) && (expectedEventEndTime
+                        .compareTo(endHour) > 0) && (expectedEventStartTime
+                        .compareTo(endHour) < 0)) {
+                    return true;
+                }
+
+            }
+            if (event.getStatus().equals(EventStatus.DENIED)) {
+                return false;
+            }
+
+        }
         return false;
     }
 

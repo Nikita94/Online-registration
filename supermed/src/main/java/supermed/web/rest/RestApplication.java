@@ -264,4 +264,27 @@ public class RestApplication extends Application {
         }
         return pageWriter.printErrorPage();
     }
+
+    @GET
+    @Path("users/enlist")
+    @Produces(MediaType.TEXT_HTML)
+    public Response enlistForVisit(@QueryParam("doctorID") String doctorID, @QueryParam
+            ("startTime") String
+            sartTime, @QueryParam("endTime") String endTime) {
+        try {
+            User patient = (User) currentRequest.getSession().getAttribute("User");
+            String branchID = (String) currentRequest.getSession().getAttribute("VisitBranchID");
+            String visitDay = (String) currentRequest.getSession().getAttribute("VisitDay");
+            if (patient != null) {
+                dataManager.enlistForVisit(doctorID, patient.getID(), branchID, visitDay + " " +
+                        sartTime, visitDay + " " + endTime);
+                java.net.URI location = new java.net.URI("./users/" + patient.getID());
+                return Response.seeOther(location).build();
+
+            }
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
 }

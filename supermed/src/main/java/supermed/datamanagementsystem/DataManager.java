@@ -2,6 +2,7 @@ package supermed.datamanagementsystem;
 
 
 import supermed.statisticsframework.Event;
+import supermed.statisticsframework.EventStatus;
 import supermed.statisticsframework.Schedule;
 import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
@@ -264,7 +265,7 @@ public class DataManager {
             resultSet = statement.executeQuery("select * from users where id in (select id from " +
                     "employees where branch_id = " +
                     branchId +
-                    " and position_id = " + positionID + ");");
+                    " and position_id = " + positionID + ")");
             Employee employee = (Employee) constructUser();
             while (employee != null) {
                 doctors.add(employee);
@@ -311,9 +312,11 @@ public class DataManager {
     private Event constructEvent() {
         try {
             if (resultSet.next()) {
-                return new Event(resultSet.getString("id"), resultSet.getString("user_id"),
+                Event event = new Event(resultSet.getString("id"), resultSet.getString("user_id"),
                         resultSet.getString("expected_start_date"),
                         resultSet.getString("expected_end_date"));
+                event.setStatus(EventStatus.createStatus(resultSet.getString("status")));
+                return event;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -359,6 +362,32 @@ public class DataManager {
             e.printStackTrace();
         } catch (NamingException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void enlistForVisit(String doctorID, String patientID, String branchID, String
+            startTime, String endTime) {
+        openConnection();
+        try {
+            statement.executeUpdate("insert into events values (NULL," + doctorID +
+                    "," + branchID + ",'" + startTime + "','" + startTime + "','" + endTime + "'," +
+                    "'" +
+                    endTime + "','visit','planned')");
+            statement.executeUpdate("insert into visits values ((select id from events where " +
+                    "user_id = " + doctorID + " and branch_id = " + branchID + " and " +
+                    "expected_start_date = " + startTime + " and expected_end_date = " + endTime
+                    + ")," + patientID + ",NULL,NULL,NULL)");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

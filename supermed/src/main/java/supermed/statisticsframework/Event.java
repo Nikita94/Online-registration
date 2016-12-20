@@ -61,11 +61,27 @@ public class Event {
         return expectedEndDate.substring(11);
     }
 
+    public String getActualStartTime() {
+        return actualStartDate.substring(11);
+    }
+
+    public String getActualEndTime() {
+        return actualEndDate.substring(11);
+    }
+
     public String getEmployeeID() {
         return employeeID;
     }
 
     public String getEventID() {
         return eventID;
+    }
+
+    public void setStatus(EventStatus status) {
+        this.status = status;
+    }
+
+    public EventStatus getStatus() {
+        return status;
     }
 }

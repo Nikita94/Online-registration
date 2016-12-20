@@ -45,6 +45,7 @@ public class DataManager {
         }
     }
 
+
     private void closeConnection() throws SQLException, NamingException {
         if (resultSet != null)
             resultSet.close();
@@ -57,8 +58,8 @@ public class DataManager {
     }
 
 
-    public User getUserByLogin(String login) {
-        openConnection();
+    public User getUserByLogin(String login, Statement stat)  {
+        statement = stat;
         try {
             resultSet = statement.executeQuery("select * from users where login = '" + login + "'");
             return constructUser();
@@ -76,6 +77,24 @@ public class DataManager {
         return null;
     }
 
+    public  User getUserByLogin(String login) {
+        openConnection();
+        try {
+            resultSet = statement.executeQuery("select * from users where login = '" + login + "'");
+            return constructUser();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
     public User logIn(String login, String password) {
         openConnection();
         try {
@@ -95,6 +114,45 @@ public class DataManager {
         }
         return null;
     }
+    public  User logIn(String login, String password, Statement stat) {
+        statement = stat;
+        try {
+            resultSet = statement.executeQuery("select * from users where login = '" + login +
+                    "' and password = '" + password + "'");
+            return constructUser();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public  User getUserById(String id, Statement stat) {
+        statement = stat;
+        try {
+            resultSet = statement.executeQuery("select * from users where id = " + id);
+            return constructUser();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 
     public User getUserById(String id) {
         openConnection();
@@ -114,6 +172,7 @@ public class DataManager {
         }
         return null;
     }
+
 
     public Map<String, String> getMedicalPositions(String branchId) {
         openConnection();

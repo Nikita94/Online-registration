@@ -15,6 +15,42 @@ public class UserData {
     private String address;
     private String phoneNumber;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserData userData = (UserData) o;
+
+        if (email != null ? !email.equals(userData.email) : userData.email != null) return false;
+        if (firstName != null ? !firstName.equals(userData.firstName) : userData.firstName != null)
+            return false;
+        if (middleName != null ? !middleName.equals(userData.middleName) : userData.middleName !=
+                null)
+            return false;
+        if (lastName != null ? !lastName.equals(userData.lastName) : userData.lastName != null)
+            return false;
+        if (birthDate != null ? !birthDate.equals(userData.birthDate) : userData.birthDate != null)
+            return false;
+        if (address != null ? !address.equals(userData.address) : userData.address != null)
+            return false;
+        return phoneNumber != null ? phoneNumber.equals(userData.phoneNumber) : userData
+                .phoneNumber == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = email != null ? email.hashCode() : 0;
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (middleName != null ? middleName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (birthDate != null ? birthDate.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
+        return result;
+    }
+
     private UserData(String email, String firstName, String middleName, String lastName, String
             birthDate, String address, String phoneNumber) {
         this.email = email;
@@ -26,7 +62,7 @@ public class UserData {
         this.phoneNumber = phoneNumber;
     }
 
-    private UserData() {
+    public UserData() {
     }
 
     public String getLogin() {

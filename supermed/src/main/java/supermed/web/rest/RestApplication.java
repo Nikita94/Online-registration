@@ -6,6 +6,7 @@ import supermed.httpexception.ResponseBuilderImpl;
 import supermed.usermanagementsystem.UserManager;
 import supermed.usermanagementsystem.user.User;
 import supermed.usermanagementsystem.user.UserData;
+import supermed.web.EmailSender;
 import supermed.web.ui.PageWriter;
 
 import javax.naming.NamingException;
@@ -29,6 +30,7 @@ public class RestApplication extends Application {
     UserManager userManager = new UserManager();
     DataManager dataManager = new DataManager();
     PageWriter pageWriter = new PageWriter();
+    EmailSender emailSender = new EmailSender();
 
     @Context
     HttpServletRequest currentRequest;
@@ -102,6 +104,13 @@ public class RestApplication extends Application {
                         "Incorrect data");
             } else {
                 try {
+                    emailSender.send("Добро пожаловать в клинику SuperMed!",
+                            "Ваш аккаунт пациента успешно создан!\n\n" +
+                            "Спасибо за то, что к нам присоединились\n" +
+                            "Ваш логин и пароль для входа в систему: \n" +
+                                    email + "\n" +
+                            password +
+                                    "\n\n С уважением, команда Supermed", email);
                     java.net.URI location = new java.net.URI("./users/" + id);
                     return Response.seeOther(location).build();
                 } catch (URISyntaxException e) {
@@ -192,6 +201,9 @@ public class RestApplication extends Application {
         //User currentUser = (User) currentRequest.getAttribute("User");
         //if (user.getID().equals(currentUser.getID())) {
         userManager.updateInfoAboutYourself(id, password, address, contact_phone);
+        emailSender.send("Изменение контактных данных",
+                "Ваши контактные данные были успешно изменены." +
+                        "\n\n С уважением, команда Supermed", user.getUserData().getEmail());
         java.net.URI location = null;
         try {
             location = new java.net.URI("./users/" + id);
@@ -202,12 +214,6 @@ public class RestApplication extends Application {
         //}
         return null;
     }
-//
-    //@DELETE
-    //@Path("/{id}")
-    //public boolean deleteUser(User user) {
-    //    return false;
-    //}
 
     @GET
     @Path("/users/{id}")
@@ -235,7 +241,11 @@ public class RestApplication extends Application {
         try {
             User currentUser = (User) currentRequest.getSession().getAttribute("User");
             if (currentUser.getRole() == MANAGER) {
+                User user = dataManager.getUserById(id);
                 dataManager.removeUser(id);
+                emailSender.send("Спасибоза сотрудничество!\n",
+                        "Спасибо за то, что были нашим клиентов все это время!" +
+                                "\n\n С уважением, команда Supermed", user.getUserData().getEmail());
                 List<User> userList = dataManager.getUsers();
                 return pageWriter.printUsersProfile(userList);
             }

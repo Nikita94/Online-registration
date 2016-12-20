@@ -1,10 +1,14 @@
 package supermed.web.ui;
 
 import supermed.datamanagementsystem.DataManager;
+import supermed.statisticsframework.Event;
+import supermed.statisticsframework.Schedule;
 import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -351,7 +355,7 @@ public class PageWriter {
         return createUser;
     }
 
-    public static String printScheduleForPatient(Map<String, String> specialitites) {
+    public static String printSpecChooserForPatient(Map<String, String> specialitites) {
         StringBuilder stringBuilder = new StringBuilder();
         String heading = "<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -367,5 +371,61 @@ public class PageWriter {
         }
         stringBuilder.append("</select>\n</body>\n</html>\n ");
         return stringBuilder.toString();
+    }
+
+    public String printShecduleForUser(List<Schedule> schedules) {
+        String heading = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<body><table style=\"width:100%\">\n<tr><th>Время</th>";
+        String ending = "</table>\n" +
+                "\n" +
+                "</body>\n" +
+                "</html>\n";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(heading);
+        if (schedules == null) {
+            schedules = new LinkedList<Schedule>();
+        }
+        for (Schedule s : schedules) {
+            stringBuilder.append("<th>").append(s.getEmployee().getUserData().getLastName())
+                    .append(" ").append(s.getEmployee().getUserData().getFirstName())
+                    .append(" ").append(s.getEmployee().getUserData().getMiddleName())
+                    .append("</th>\n");
+        }
+        stringBuilder.append("</tr>");
+        for (int i = 8; i < 12; i++) {
+            stringBuilder.append("<tr>");
+            stringBuilder.append("<td>" + i + " - " + (i + 1) + "</td>");
+            for (Schedule s : schedules) {
+                if (isAlreadyBooked(i, s.getEvents())) {
+                    stringBuilder.append("<td></td>");
+                } else {
+                    stringBuilder.append("<td><button onClick=\"javascript:window.location" +
+                            ".href=''\">Записаться</button></td>");
+                }
+            }
+
+            stringBuilder.append("</tr>");
+        }
+        for (int i = 13; i < 17; i++) {
+            stringBuilder.append("<tr>");
+            stringBuilder.append("<td>" + i + " - " + (i + 1) + "</td>");
+            for (Schedule s : schedules) {
+                if (isAlreadyBooked(i, s.getEvents())) {
+                    stringBuilder.append("<td></td>");
+                } else {
+                    stringBuilder.append("<td><button onClick=\"javascript:window.location" +
+                            ".href=''\">Записаться</button></td>");
+                }
+            }
+
+            stringBuilder.append("</tr>");
+        }
+        stringBuilder.append(ending);
+        return stringBuilder.toString();
+    }
+
+    private boolean isAlreadyBooked(int hour, List<Event> events) {
+        return false;
     }
 }

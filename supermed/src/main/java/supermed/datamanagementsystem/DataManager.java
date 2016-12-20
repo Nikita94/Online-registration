@@ -1,6 +1,8 @@
 package supermed.datamanagementsystem;
 
 
+import supermed.statisticsframework.Event;
+import supermed.statisticsframework.Schedule;
 import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
@@ -14,6 +16,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -204,7 +208,7 @@ public class DataManager {
     }
 
     public boolean updateInfoAboutYourself(String id, String password, String address,
-                                                  String contact_phone) {
+                                           String contact_phone) {
         String query = "UPDATE users SET password = \"" +
                 password + "\", address = \"" +
                 address + "\", contact_phone = \"" +
@@ -255,17 +259,43 @@ public class DataManager {
 
     }
 
-    public Map<String, String> getSchedule(String day, String branchId, String positionID) {
+    public List<Schedule> getSchedule(String day, String branchId, String positionID) {
         openConnection();
         try {
-            resultSet = statement.executeQuery("select * from events where = 1 " +
-                    "and id in (select position_id from employees where branch_id = " + branchId +
-                    " )");
-            Map<String, String> medicalPostitions = new HashMap<String, String>();
-            while (resultSet.next()) {
-                medicalPostitions.put(resultSet.getString("id"), resultSet.getString("name"));
+            List<Employee> doctors = new LinkedList<Employee>();
+            resultSet = statement.executeQuery("select * from users where id in (select id from " +
+                    "employees where branch_id = " +
+                    branchId +
+                    " and position_id = " + positionID + ");");
+            Employee employee = (Employee) constructUser();
+            while (employee != null) {
+                doctors.add(employee);
+                employee = (Employee) constructUser();
             }
-            return medicalPostitions;
+
+            resultSet = statement.executeQuery("select * from events where branch_id = " +
+                    branchId +
+                    " and user_id in (select id from employees where branch_id = " + branchId +
+                    " and position_id = " + positionID + ") and (actual_start_date like '" + day
+                    + "%' or actual_end_date like '" + day + "%')");
+            List<Event> events = new LinkedList<Event>();
+            Event event = constructEvent();
+            while (event != null) {
+                events.add(event);
+                event = constructEvent();
+            }
+            List<Schedule> schedules = new LinkedList<Schedule>();
+            for (Employee empl : doctors) {
+                Schedule schedule = new Schedule();
+                schedule.setEmployee(empl);
+                for (Event ev : events) {
+                    if (empl.getID().equals(ev.getEmployeeID())) {
+                        schedule.addEvent(ev);
+                    }
+                }
+                schedules.add(schedule);
+            }
+            return schedules;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -276,6 +306,19 @@ public class DataManager {
             } catch (NamingException e) {
                 e.printStackTrace();
             }
+        }
+        return null;
+    }
+
+    private Event constructEvent() {
+        try {
+            if (resultSet.next()) {
+                return new Event(resultSet.getString("id"), resultSet.getString("user_id"),
+                        resultSet.getString("expected_start_date"),
+                        resultSet.getString("expected_end_date"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }

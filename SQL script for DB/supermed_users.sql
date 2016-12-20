@@ -130,5 +130,8 @@ DROP TABLE IF EXISTS `visits`;
 CREATE TABLE `visits` (
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
   `patient_id` int(11),
+  `anamnesis` TEXT,
+  `diagmosis` TEXT,
+  `appointment` TEXT,
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

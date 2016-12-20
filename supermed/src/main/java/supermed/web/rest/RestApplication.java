@@ -37,19 +37,21 @@ public class RestApplication extends Application {
     @Path("/users/visits")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
-    public String getSchedule(@FormParam("dateOfVisit") String visitDate, @FormParam
+    public String getSpecChooser(@FormParam("dateOfVisit") String visitDate, @FormParam
             ("branch")
             String branchID) {
         currentRequest.getSession().setAttribute("VisitDay", visitDate);
         currentRequest.getSession().setAttribute("VisitBranchID", branchID);
-        return pageWriter.printScheduleForPatient(dataManager.getMedicalPositions(branchID));
+        return pageWriter.printSpecChooserForPatient(dataManager.getMedicalPositions(branchID));
     }
 
     @GET
     @Path("/users/visits/{specID}")
     @Produces(MediaType.TEXT_HTML)
-    public String getScheduleForSpeciality(@PathParam("specID") String id) {
-        return null;
+    public String getScheduleForSpeciality(@PathParam("specID") String specID) {
+        String visitDay = (String) currentRequest.getSession().getAttribute("VisitDay");
+        String branchID = (String) currentRequest.getSession().getAttribute("VisitBranchID");
+        return pageWriter.printShecduleForUser(dataManager.getSchedule(visitDay, branchID, specID));
     }
 
     @GET

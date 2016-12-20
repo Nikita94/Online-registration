@@ -10,11 +10,11 @@ public class UserManager {
 
     DataManager dataManager = new DataManager();
 
-    public boolean createUser(User user, String password) {
+    public String createUser(User user, String password) {
         if (user != null && isValidStringParam(password)) {
             return dataManager.createUser(user, password);
         }
-        return false;
+        return "";
     }
 
     public User logIn(String login, String password) {

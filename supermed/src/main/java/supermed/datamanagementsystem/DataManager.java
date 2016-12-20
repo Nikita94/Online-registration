@@ -15,10 +15,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by nikita on 08.12.2016.
@@ -192,9 +189,9 @@ public class DataManager {
         return null;
     }
 
-    public boolean createUser(User user, String password) {
+    public String createUser(User user, String password) {
         UserData userData = user.getUserData();
-        String query = "INSERT INTO `users` VALUES (NULL,'" +
+        String query = "INSERT INTO users VALUES (NULL,'" +
                 userData.getLogin() + "','" +
                 password + "','" +
                 userData.getFirstName() + "','" +
@@ -204,7 +201,8 @@ public class DataManager {
                 userData.getAddress() + "','" +
                 userData.getPhoneNumber() + "','" +
                 user.getRole().getName() + "');";
-        return executeUpdateQuery(query);
+        executeUpdateQuery(query);
+        return getUserByLogin(userData.getLogin()).getID();
     }
 
     public boolean updateInfoAboutYourself(String id, String password, String address,
@@ -321,5 +319,46 @@ public class DataManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public List<User> getUsers() {
+        List<String> listID = getAllId();
+        List<User> userList = new ArrayList<User>();
+        for (String id : listID) {
+            userList.add(getUserById(id));
+        }
+        return userList;
+    }
+
+    private List<String> getAllId() {
+        List<String> listID = new ArrayList<String>();
+        openConnection();
+        String query = "select id from users";
+        try {
+            resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                listID.add(resultSet.getString("id"));
+            }
+            closeConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+        return listID;
+    }
+
+    public void removeUser(String id) {
+        openConnection();
+        String query = "DELETE FROM users " +
+                "WHERE id = " + id;
+        try {
+            statement.executeUpdate(query);
+            closeConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
     }
 }

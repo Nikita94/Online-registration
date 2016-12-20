@@ -16,6 +16,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import static supermed.usermanagementsystem.user.Role.*;
 
@@ -65,8 +66,9 @@ public class RestApplication extends Application {
     }
 
     @POST
-    @Path("/create_user")
+    @Path("/create_patient")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_HTML)
     public Response createUser(@FormParam("first_name") String first_name,
                                @FormParam("middle_name") String middle_name,
                                @FormParam("last_name") String last_name,
@@ -76,8 +78,8 @@ public class RestApplication extends Application {
                                @FormParam("role") String role,
                                @FormParam("email") String email,
                                @FormParam("password") String password) {
-        User currentUser = (User) currentRequest.getAttribute("User");
-        if (currentUser.getRole() == MANAGER) {
+        User currentUser = (User) currentRequest.getSession().getAttribute("User");
+        if (currentUser.getRole() != MANAGER) {
             responseBuilder.respondWithStatusAndObject(Response.Status.CONFLICT, "You haven't " +
                     "enough " +
                     "permissions");
@@ -92,13 +94,13 @@ public class RestApplication extends Application {
                     .setLogin(email)
                     .build();
             User user = new User(userData, createRole(role));
-            boolean wasExecuted = userManager.createUser(user, password);
-            if (!wasExecuted) {
+            String id = userManager.createUser(user, password);
+            if (id.equals("")) {
                 return responseBuilder.respondWithStatusAndObject(Response.Status.BAD_REQUEST,
                         "Incorrect data");
             } else {
                 try {
-                    java.net.URI location = new java.net.URI("./users/" + user.getID());
+                    java.net.URI location = new java.net.URI("./users/" + id);
                     return Response.seeOther(location).build();
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
@@ -147,10 +149,33 @@ public class RestApplication extends Application {
 
 
     @GET
-    @Path("/create_user")
+    @Path("/create_patient")
     @Produces(MediaType.TEXT_HTML)
     public String createUser() {
         return pageWriter.printCreateUserPage();
+    }
+
+    @GET
+    @Path("/show_profiles")
+    @Produces(MediaType.TEXT_HTML)
+    public String showProfiles() {
+        User currentUser = (User) currentRequest.getSession().getAttribute("User");
+        if (currentUser.getRole() != MANAGER) {
+            responseBuilder.respondWithStatusAndObject(Response.Status.CONFLICT, "You haven't " +
+                    "enough " +
+                    "permissions");
+        } else {
+            List<User> userList = dataManager.getUsers();
+            return pageWriter.printUsersProfile(userList);
+        }
+        return null;
+    }
+
+    @GET
+    @Path("/create_employee")
+    @Produces(MediaType.TEXT_HTML)
+    public String createDoctor() {
+        return pageWriter.printCreateEmployeePage();
     }
 
     @POST
@@ -194,6 +219,23 @@ public class RestApplication extends Application {
                 } else if (currentUser.getID().equals(id)) {
                     return pageWriter.printUserProfilePage(userManager.getUserById(id));
                 }
+            }
+        } catch (Exception e) {
+
+        }
+        return pageWriter.printErrorPage();
+    }
+
+    @GET
+    @Path("/remove/{id}")
+    @Produces(MediaType.TEXT_HTML)
+    public String removeUser(@PathParam("id") String id) {
+        try {
+            User currentUser = (User) currentRequest.getSession().getAttribute("User");
+            if (currentUser.getRole() == MANAGER) {
+                dataManager.removeUser(id);
+                List<User> userList = dataManager.getUsers();
+                return pageWriter.printUsersProfile(userList);
             }
         } catch (Exception e) {
 

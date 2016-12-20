@@ -45,7 +45,6 @@ public class RestApplicationTest extends JerseyTest {
 
     @Before
     public void before() {
-        //restApplication = mock(RestApplication.class);
         userManager.setDataManager(dataManager);
         UserData userData = UserData.newBuilder().setEmail("tets")
                 .setFirstName("test")

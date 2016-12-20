@@ -32,7 +32,7 @@ CREATE TABLE `users` (
   `middle_name` char(40) NOT NULL,
   `last_name` char(40) NOT NULL,
   `birth_date` char(40) NOT NULL,
-  `address` char(40) NOT NULL,
+  `address` char(60) NOT NULL,
   `contact_phone` char(40) NOT NULL,
   `role` char(40) NOT NULL,
   PRIMARY KEY (`id`)

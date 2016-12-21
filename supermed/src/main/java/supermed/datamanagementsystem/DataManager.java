@@ -209,8 +209,11 @@ public class DataManager {
 
     public boolean updateInfoAboutYourself(String id, String password, String address,
                                            String contact_phone) {
-        String query = "UPDATE users SET password = \"" +
-                password + "\", address = \"" +
+        String query = "UPDATE users SET ";
+        if (!password.equals("")) {
+            query += "password = \"" + password;
+        }
+        query += "\", address = \"" +
                 address + "\", contact_phone = \"" +
                 contact_phone + "\" WHERE id = " + id;
         return executeUpdateQuery(query);

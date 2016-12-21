@@ -243,8 +243,8 @@ public class RestApplication extends Application {
             if (currentUser.getRole() == MANAGER) {
                 User user = dataManager.getUserById(id);
                 dataManager.removeUser(id);
-                emailSender.send("Спасибоза сотрудничество!\n",
-                        "Спасибо за то, что были нашим клиентов все это время!" +
+                emailSender.send("Спасибо за сотрудничество!\n",
+                        "Спасибо за то, что были нашим клиентом все это время!" +
                                 "\n\n С уважением, команда Supermed", user.getUserData().getEmail());
                 List<User> userList = dataManager.getUsers();
                 return pageWriter.printUsersProfile(userList);

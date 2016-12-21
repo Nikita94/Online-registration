@@ -480,35 +480,28 @@ public class PageWriter {
     private boolean isAlreadyBooked(int hour, List<Event> events) {
         String expectedEventStartTime;
         String expectedEventEndTime;
-        String actualEventStartTime;
-        String actualEventEndTime;
-        String startHour = (hour > 9 ? "" : "0") + hour;
-        String endHour = (hour > 8 ? "" : "0") + hour + 1;
+
+        int startHour = hour;
+        int endHour = hour + 1;
         for (Event event : events) {
             expectedEventStartTime = event.getExpectedStartTime().substring(0, 2);
             expectedEventEndTime = event.getExpectedEndTime().substring(0, 2);
-            actualEventStartTime = event.getActualStartTime().substring(0, 2);
-            actualEventEndTime = event.getActualEndTime().substring(0, 2);
-            if (event.getStatus().equals(EventStatus.PLANNED)) {
-                if ((expectedEventStartTime.compareTo(startHour) > 0) && (expectedEventEndTime
-                        .compareTo(endHour) < 0)) {
-                    return true;
-                }
-                if ((expectedEventStartTime.compareTo(startHour) < 0) && (expectedEventEndTime
-                        .compareTo(endHour) > 0)) {
-                    return true;
-                }
-                if ((expectedEventStartTime.compareTo(startHour) < 0) && (expectedEventEndTime
-                        .compareTo(endHour) < 0) && (expectedEventEndTime
-                        .compareTo(startHour) > 0)) {
-                    return true;
-                }
-                if ((expectedEventStartTime.compareTo(startHour) > 0) && (expectedEventEndTime
-                        .compareTo(endHour) > 0) && (expectedEventStartTime
-                        .compareTo(endHour) < 0)) {
-                    return true;
-                }
+            if (expectedEventStartTime.startsWith("0")) {
+                expectedEventStartTime = expectedEventStartTime.substring(1);
+            }
+            int eventExpectedStartHour = Integer.parseInt(expectedEventStartTime);
+            if (expectedEventEndTime.startsWith("0")) {
+                expectedEventEndTime = expectedEventEndTime.substring(1);
+            }
+            int eventExpectedEndHour = Integer.parseInt(expectedEventEndTime);
 
+            if (event.getStatus().equals(EventStatus.PLANNED)) {
+                if ((eventExpectedStartHour >= startHour) && (eventExpectedEndHour <= endHour)) {
+                    return true;
+                }
+                if ((eventExpectedStartHour < startHour) && (eventExpectedEndHour > endHour)) {
+                    return true;
+                }
             }
             if (event.getStatus().equals(EventStatus.DENIED)) {
                 return false;

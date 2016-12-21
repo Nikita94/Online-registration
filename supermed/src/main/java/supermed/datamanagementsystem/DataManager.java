@@ -1,6 +1,7 @@
 package supermed.datamanagementsystem;
 
 
+import supermed.consultancysystem.Visit;
 import supermed.statisticsframework.Event;
 import supermed.statisticsframework.EventStatus;
 import supermed.statisticsframework.Schedule;
@@ -369,14 +370,15 @@ public class DataManager {
             startTime, String endTime) {
         openConnection();
         try {
-            statement.executeUpdate("insert into events values (NULL," + doctorID +
+            statement.executeUpdate("insert into events values (NULL," +
+                    doctorID +
                     "," + branchID + ",'" + startTime + "','" + startTime + "','" + endTime + "'," +
                     "'" +
                     endTime + "','visit','planned')");
             statement.executeUpdate("insert into visits values ((select id from events where " +
-                    "user_id = " + doctorID + " and branch_id = " + branchID + " and " +
-                    "expected_start_date = " + startTime + " and expected_end_date = " + endTime
-                    + ")," + patientID + ",NULL,NULL,NULL)");
+                    "user_id=" + doctorID + " and branch_id=" + branchID + " and " +
+                    "expected_start_date='" + startTime + "' and expected_end_date ='" + endTime
+                    + "' and status='planned' and event_type='visit')," + patientID + ",NULL,NULL,NULL)");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -389,5 +391,31 @@ public class DataManager {
                 e.printStackTrace();
             }
         }
+    }
+
+    public List<Visit> getVisitsWithStatus(User user, EventStatus status) {
+        List<Visit> visits = new LinkedList<Visit>();
+        openConnection();
+        try {
+            if (user.getRole().equals(Role.DOCTOR)) {
+                resultSet = statement.executeQuery("select e.id, e.branch_id, e" +
+                        ".expected_start_date, e.actual_start_date, e.expected_end_date," +
+                        " e.actual_end_date, v.anamnesis, v.diagnosis, v.appointment from events " +
+                        "e, visits v where user_id=" + user.getID() + " and " +
+                        "event_type = 'visit' and status in ('" + status.getName() + "') and v" +
+                        ".event_id=e.id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }

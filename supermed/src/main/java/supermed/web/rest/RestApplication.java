@@ -1,9 +1,12 @@
 package supermed.web.rest;
 
+import supermed.consultancysystem.Visit;
 import supermed.datamanagementsystem.DataManager;
 import supermed.httpexception.ResourceNotFoundException;
 import supermed.httpexception.ResponseBuilderImpl;
+import supermed.statisticsframework.EventStatus;
 import supermed.usermanagementsystem.UserManager;
+import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
 import supermed.usermanagementsystem.user.UserData;
 import supermed.web.EmailSender;
@@ -17,7 +20,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static supermed.usermanagementsystem.user.Role.*;
 
@@ -106,10 +111,10 @@ public class RestApplication extends Application {
                 try {
                     emailSender.send("Добро пожаловать в клинику SuperMed!",
                             "Ваш аккаунт пациента успешно создан!\n\n" +
-                            "Спасибо за то, что к нам присоединились\n" +
-                            "Ваш логин и пароль для входа в систему: \n" +
+                                    "Спасибо за то, что к нам присоединились\n" +
+                                    "Ваш логин и пароль для входа в систему: \n" +
                                     email + "\n" +
-                            password +
+                                    password +
                                     "\n\n С уважением, команда Supermed", email);
                     java.net.URI location = new java.net.URI("./users/" + id);
                     return Response.seeOther(location).build();
@@ -243,9 +248,10 @@ public class RestApplication extends Application {
             if (currentUser.getRole() == MANAGER) {
                 User user = dataManager.getUserById(id);
                 dataManager.removeUser(id);
-                emailSender.send("Спасибоза сотрудничество!\n",
+                emailSender.send("Спасибо за сотрудничество!\n",
                         "Спасибо за то, что были нашим клиентов все это время!" +
-                                "\n\n С уважением, команда Supermed", user.getUserData().getEmail());
+                                "\n\n С уважением, команда Supermed", user.getUserData().getEmail
+                                ());
                 List<User> userList = dataManager.getUsers();
                 return pageWriter.printUsersProfile(userList);
             }
@@ -273,5 +279,76 @@ public class RestApplication extends Application {
 
         }
         return pageWriter.printErrorPage();
+    }
+
+    @GET
+    @Path("users/enlist")
+    @Produces(MediaType.TEXT_HTML)
+    public Response enlistForVisit(@QueryParam("doctorID") String doctorID, @QueryParam
+            ("startTime") String
+            sartTime, @QueryParam("endTime") String endTime) {
+        try {
+            User patient = (User) currentRequest.getSession().getAttribute("User");
+            String branchID = (String) currentRequest.getSession().getAttribute("VisitBranchID");
+            String visitDay = (String) currentRequest.getSession().getAttribute("VisitDay");
+            User doctor = dataManager.getUserById(doctorID);
+            if (patient != null) {
+                dataManager.enlistForVisit(doctorID, patient.getID(), branchID, visitDay + " " +
+                        sartTime, visitDay + " " + endTime);
+                emailSender.send("Запись на прием", "Добавлена новая заявка на прием от пациента "
+                        + patient.getUserData().getLastName() + " " + patient.getUserData()
+                        .getFirstName() + " " + patient.getUserData().getMiddleName() + "\n " +
+                        "Телефон: " + patient.getUserData().getPhoneNumber() + "\n" + "Email: "
+                        + patient.getUserData().getEmail() + "\n", doctor.getUserData().getEmail());
+                java.net.URI location = new java.net.URI("./users/" + patient.getID());
+                return Response.seeOther(location).build();
+
+            }
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    @GET
+    @Path("users/myVisits")
+    @Produces(MediaType.TEXT_HTML)
+    public String getVisits() {
+        try {
+            User user = (User) currentRequest.getSession().getAttribute("User");
+            if (user != null) {
+                List<Visit> plannedVisits = dataManager.getVisitsWithStatus(user, EventStatus
+                        .PLANNED);
+                List<Visit> finishedVisits = dataManager.getVisitsWithStatus(user, EventStatus
+                        .FINISHED);
+                Map<Visit, User> visits = new HashMap<Visit, User>();
+                if (user.getRole().equals(Role.PATIENT)) {
+                    User doctor;
+                    for (Visit planned : plannedVisits) {
+                        doctor = dataManager.getUserById(planned.getEmployeeID());
+                        visits.put(planned, doctor);
+                    }
+                    for (Visit finished : finishedVisits) {
+                        doctor = dataManager.getUserById(finished.getEmployeeID());
+                        visits.put(finished, doctor);
+                    }
+                }
+                if (user.getRole().equals(Role.DOCTOR)) {
+                    User patient;
+                    for (Visit planned : plannedVisits) {
+                        patient = dataManager.getUserById(planned.getPatientID());
+                        visits.put(planned, patient);
+                    }
+                    for (Visit finished : finishedVisits) {
+                        patient = dataManager.getUserById(finished.getEmployeeID());
+                        visits.put(finished, patient);
+                    }
+                }
+                return pageWriter.printVisits(visits, user.getRole());
+            }
+        } catch (Exception e) {
+
+        }
+        return pageWriter.printLoginPage();
     }
 }

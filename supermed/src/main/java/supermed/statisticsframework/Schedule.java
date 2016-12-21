@@ -2,6 +2,7 @@ package supermed.statisticsframework;
 
 import supermed.usermanagementsystem.user.Employee;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,6 +23,7 @@ public class Schedule {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+        events = new LinkedList<Event>();
     }
 
     public void setEvents(List<Event> events) {

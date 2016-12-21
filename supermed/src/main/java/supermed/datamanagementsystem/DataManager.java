@@ -1,7 +1,9 @@
 package supermed.datamanagementsystem;
 
 
+import supermed.consultancysystem.Visit;
 import supermed.statisticsframework.Event;
+import supermed.statisticsframework.EventStatus;
 import supermed.statisticsframework.Schedule;
 import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
@@ -291,8 +293,11 @@ public class DataManager {
 
     public boolean updateInfoAboutYourself(String id, String password, String address,
                                            String contact_phone) {
-        String query = "UPDATE users SET password = \"" +
-                password + "\", address = \"" +
+        String query = "UPDATE users SET ";
+        if (!password.equals("")) {
+            query += "password = \"" + password + "\", ";
+        }
+        query += "address = \"" +
                 address + "\", contact_phone = \"" +
                 contact_phone + "\" WHERE id = " + id;
         return executeUpdateQuery(query);
@@ -348,7 +353,7 @@ public class DataManager {
             resultSet = statement.executeQuery("select * from users where id in (select id from " +
                     "employees where branch_id = " +
                     branchId +
-                    " and position_id = " + positionID + ");");
+                    " and position_id = " + positionID + ")");
             Employee employee = (Employee) constructUser();
             while (employee != null) {
                 doctors.add(employee);
@@ -395,9 +400,12 @@ public class DataManager {
     private Event constructEvent() {
         try {
             if (resultSet.next()) {
-                return new Event(resultSet.getString("id"), resultSet.getString("user_id"),
+                Event event = new Event(resultSet.getString("id"), resultSet.getString("user_id"),
+                        resultSet.getString("branch_id"),
                         resultSet.getString("expected_start_date"),
                         resultSet.getString("expected_end_date"));
+                event.setStatus(EventStatus.createStatus(resultSet.getString("status")));
+                return event;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -444,5 +452,87 @@ public class DataManager {
         } catch (NamingException e) {
             e.printStackTrace();
         }
+    }
+
+    public void enlistForVisit(String doctorID, String patientID, String branchID, String
+            startTime, String endTime) {
+        openConnection();
+        try {
+            statement.executeUpdate("insert into events values (NULL," +
+                    doctorID +
+                    "," + branchID + ",'" + startTime + "','" + startTime + "','" + endTime + "'," +
+                    "'" +
+                    endTime + "','visit','planned')");
+            statement.executeUpdate("insert into visits values ((select id from events where " +
+                    "user_id=" + doctorID + " and branch_id=" + branchID + " and " +
+                    "expected_start_date='" + startTime + "' and expected_end_date ='" + endTime
+                    + "' and status='planned' and event_type='visit')," + patientID + ",NULL," +
+                    "NULL,NULL)");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public List<Visit> getVisitsWithStatus(User user, EventStatus status) {
+        List<Visit> visits = new LinkedList<Visit>();
+        openConnection();
+        try {
+
+            resultSet = statement.executeQuery("select e.id, e.user_id, e.branch_id, e" +
+                    ".expected_start_date, e.actual_start_date, e.expected_end_date, e" +
+                    ".actual_end_date,e.event_type,e.status, v.patient_id, v.anamnesis, v" +
+                    ".diagnosis, v.appointment from events e," +
+                    " visits v where " + (user.getRole().equals(Role.DOCTOR) ? "e.user_id=" : "v" +
+                    ".patient_id=") + user.getID() + " and e" +
+                    ".event_type='visit' and e" +
+                    ".status='" + status.getName() + "' and v.event_id=e.id order by e.id " +
+                    "DESC");
+            Visit visit = constructVisit();
+            while (visit != null) {
+                visits.add(visit);
+                visit = constructVisit();
+            }
+            return visits;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private Visit constructVisit() {
+
+        try {
+            if (resultSet.next()) {
+                Event event = new Event(resultSet.getString("id"), resultSet.getString("user_id"),
+                        resultSet.getString("branch_id"),
+                        resultSet.getString("expected_start_date"),
+                        resultSet.getString("expected_end_date"));
+                event.setActualEndDate(resultSet.getString("actual_end_date"));
+                event.setActualStartDate(resultSet.getString("actual_start_date"));
+                event.setStatus(EventStatus.createStatus(resultSet.getString("status")));
+                Visit visit = new Visit(event, resultSet.getString("patient_id"));
+                return visit;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

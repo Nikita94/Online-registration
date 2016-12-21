@@ -1,7 +1,9 @@
 package supermed.web.ui;
 
+import supermed.consultancysystem.Visit;
 import supermed.datamanagementsystem.DataManager;
 import supermed.statisticsframework.Event;
+import supermed.statisticsframework.EventStatus;
 import supermed.statisticsframework.Schedule;
 import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
@@ -443,8 +445,11 @@ public class PageWriter {
                 if (isAlreadyBooked(i, s.getEvents())) {
                     stringBuilder.append("<td></td>");
                 } else {
-                    stringBuilder.append("<td><button onClick=\"javascript:window.location" +
-                            ".href=''\">Записаться</button></td>");
+                    stringBuilder.append("<td><button onClick=\"javascript:window" +
+                            ".location='../enlist?doctorID=" + s.getEmployee().getID() +
+                            "&startTime=" + (i > 9 ? "" : "0") + i + "-00&endTime=" + (i > 8 ? ""
+                            : "0") + (i + 1) +
+                            "-00'\">Записаться</button></td>");
                 }
             }
 
@@ -457,8 +462,13 @@ public class PageWriter {
                 if (isAlreadyBooked(i, s.getEvents())) {
                     stringBuilder.append("<td></td>");
                 } else {
-                    stringBuilder.append("<td><button onClick=\"javascript:window.location" +
-                            ".href=''\">Записаться</button></td>");
+                    {
+                        stringBuilder.append("<td><button onClick=\"javascript:window" +
+                                ".location='../enlist?doctorID=" + s.getEmployee().getID() +
+                                "&startTime=" + (i > 9 ? "" : "0") + i + "-00&endTime=" + (i > 8
+                                ? "" : "0") + (i + 1) +
+                                "-00'\">Записаться</button></td>");
+                    }
                 }
             }
 
@@ -469,6 +479,36 @@ public class PageWriter {
     }
 
     private boolean isAlreadyBooked(int hour, List<Event> events) {
+        String expectedEventStartTime;
+        String expectedEventEndTime;
+
+        int startHour = hour;
+        int endHour = hour + 1;
+        for (Event event : events) {
+            expectedEventStartTime = event.getExpectedStartTime().substring(0, 2);
+            expectedEventEndTime = event.getExpectedEndTime().substring(0, 2);
+            if (expectedEventStartTime.startsWith("0")) {
+                expectedEventStartTime = expectedEventStartTime.substring(1);
+            }
+            int eventExpectedStartHour = Integer.parseInt(expectedEventStartTime);
+            if (expectedEventEndTime.startsWith("0")) {
+                expectedEventEndTime = expectedEventEndTime.substring(1);
+            }
+            int eventExpectedEndHour = Integer.parseInt(expectedEventEndTime);
+
+            if (event.getStatus().equals(EventStatus.PLANNED)) {
+                if ((eventExpectedStartHour >= startHour) && (eventExpectedEndHour <= endHour)) {
+                    return true;
+                }
+                if ((eventExpectedStartHour < startHour) && (eventExpectedEndHour > endHour)) {
+                    return true;
+                }
+            }
+            if (event.getStatus().equals(EventStatus.DENIED)) {
+                return false;
+            }
+
+        }
         return false;
     }
 
@@ -495,5 +535,40 @@ public class PageWriter {
                 "</body>\n" +
                 "</html>\n";
         return page;
+    }
+
+    public String printVisits(Map<Visit, User> visits, Role role) {
+        String page = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<body>\n";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(page);
+        for (Map.Entry<Visit, User> v : visits.entrySet()) {
+            if (v.getKey().getStatus().equals(EventStatus.PLANNED)) {
+                stringBuilder.append(printPlannedVisit(v, role));
+            }
+            if (v.getKey().getStatus().equals(EventStatus.FINISHED)) {
+                //stringBuilder.append(printFinishedVisit(v));
+            }
+        }
+        stringBuilder.append("\n</body>\n</html>\n");
+
+        return stringBuilder.toString();
+    }
+
+    private String printPlannedVisit(Map.Entry<Visit, User> v, Role role) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<div><p>Время: ").append(v.getKey().getExpectedStartDate()).append
+                ("</p>");
+
+        stringBuilder.append("<p>" + (role.equals(Role.PATIENT) ? "Врач: " : "Пациент: "))
+                .append(v.getValue().getUserData().getFirstName())
+                .append(" ").append(v.getValue().getUserData().getMiddleName()).append(" ")
+                .append(v.getValue().getUserData().getLastName()).append("</p>");
+
+        stringBuilder.append("<p><button onClick=\"javascript:window" +
+                ".location='../denyEvent/" + v.getKey().getEventID() + "\">Отменить</button></p>");
+        stringBuilder.append("</div>");
+        return stringBuilder.toString();
     }
 }

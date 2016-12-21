@@ -116,7 +116,7 @@ CREATE TABLE `events` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11),
   `branch_id` int(11),
-  `expected_start_date` char(40) NOT NULL,
+  `expected_start_date` char(40) NOT NULL UNIQUE,
   `actual_start_date` char(40) NOT NULL,
   `expected_end_date` char(40) NOT NULL,
   `actual_end_date` char(40) NOT NULL,
@@ -128,10 +128,10 @@ CREATE TABLE `events` (
 
 DROP TABLE IF EXISTS `visits`;
 CREATE TABLE `visits` (
-  `event_id` int(11) NOT NULL AUTO_INCREMENT,
+  `event_id` int(11) NOT NULL UNIQUE,
   `patient_id` int(11),
   `anamnesis` TEXT,
-  `diagmosis` TEXT,
+  `diagnosis` TEXT,
   `appointment` TEXT,
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

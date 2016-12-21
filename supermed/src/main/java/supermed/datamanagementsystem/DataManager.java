@@ -200,6 +200,31 @@ public class DataManager {
         return null;
     }
 
+    public Map<String, String> getMedicalPositions(String branchId,Statement stat) {
+        statement = stat;
+        try {
+            resultSet = statement.executeQuery("select * from positions where is_medical = 1 " +
+                    "and id in (select position_id from employees where branch_id =" + branchId +
+                    " ) ");
+            Map<String, String> medicalPostitions = new HashMap<String, String>();
+            while (resultSet.next()) {
+                medicalPostitions.put(resultSet.getString("id"), resultSet.getString("name"));
+            }
+            return medicalPostitions;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     private User constructUser() {
         User user = new User();
         try {

@@ -250,8 +250,7 @@ public class RestApplication extends Application {
                 dataManager.removeUser(id);
                 emailSender.send("Спасибо за сотрудничество!\n",
                         "Спасибо за то, что были нашим клиентов все это время!" +
-                                "\n\n С уважением, команда Supermed", user.getUserData().getEmail
-                                ());
+                                "\n\n С уважением, команда Supermed", user.getUserData().getEmail());
                 List<User> userList = dataManager.getUsers();
                 return pageWriter.printUsersProfile(userList);
             }

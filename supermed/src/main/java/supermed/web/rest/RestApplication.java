@@ -250,7 +250,8 @@ public class RestApplication extends Application {
                 dataManager.removeUser(id);
                 emailSender.send("Спасибо за сотрудничество!\n",
                         "Спасибо за то, что были нашим клиентов все это время!" +
-                                "\n\n С уважением, команда Supermed", user.getUserData().getEmail());
+                                "\n\n С уважением, команда Supermed", user.getUserData().getEmail
+                                ());
                 List<User> userList = dataManager.getUsers();
                 return pageWriter.printUsersProfile(userList);
             }
@@ -290,9 +291,15 @@ public class RestApplication extends Application {
             User patient = (User) currentRequest.getSession().getAttribute("User");
             String branchID = (String) currentRequest.getSession().getAttribute("VisitBranchID");
             String visitDay = (String) currentRequest.getSession().getAttribute("VisitDay");
+            User doctor = dataManager.getUserById(doctorID);
             if (patient != null) {
                 dataManager.enlistForVisit(doctorID, patient.getID(), branchID, visitDay + " " +
                         sartTime, visitDay + " " + endTime);
+                emailSender.send("Запись на прием", "Добавлена новая заявка на прием от пациента "
+                        + patient.getUserData().getLastName() + " " + patient.getUserData()
+                        .getFirstName() + " " + patient.getUserData().getMiddleName() + "\n " +
+                        "Телефон: " + patient.getUserData().getPhoneNumber() + "\n" + "Email: "
+                        + patient.getUserData().getEmail() + "\n", doctor.getUserData().getEmail());
                 java.net.URI location = new java.net.URI("./users/" + patient.getID());
                 return Response.seeOther(location).build();
 

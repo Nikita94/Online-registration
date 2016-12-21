@@ -211,9 +211,9 @@ public class DataManager {
                                            String contact_phone) {
         String query = "UPDATE users SET ";
         if (!password.equals("")) {
-            query += "password = \"" + password;
+            query += "password = \"" + password + "\", ";
         }
-        query += "\", address = \"" +
+        query += "address = \"" +
                 address + "\", contact_phone = \"" +
                 contact_phone + "\" WHERE id = " + id;
         return executeUpdateQuery(query);

@@ -1,5 +1,6 @@
 package supermed.web.ui;
 
+import supermed.consultancysystem.Visit;
 import supermed.datamanagementsystem.DataManager;
 import supermed.statisticsframework.Event;
 import supermed.statisticsframework.EventStatus;
@@ -534,5 +535,40 @@ public class PageWriter {
                 "</body>\n" +
                 "</html>\n";
         return page;
+    }
+
+    public String printVisits(Map<Visit, User> visits, Role role) {
+        String page = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<body>\n";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(page);
+        for (Map.Entry<Visit, User> v : visits.entrySet()) {
+            if (v.getKey().getStatus().equals(EventStatus.PLANNED)) {
+                stringBuilder.append(printPlannedVisit(v, role));
+            }
+            if (v.getKey().getStatus().equals(EventStatus.FINISHED)) {
+                //stringBuilder.append(printFinishedVisit(v));
+            }
+        }
+        stringBuilder.append("\n</body>\n</html>\n");
+
+        return stringBuilder.toString();
+    }
+
+    private String printPlannedVisit(Map.Entry<Visit, User> v, Role role) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<div><p>Время: ").append(v.getKey().getExpectedStartDate()).append
+                ("</p>");
+
+        stringBuilder.append("<p>" + (role.equals(Role.PATIENT) ? "Врач: " : "Пациент: "))
+                .append(v.getValue().getUserData().getFirstName())
+                .append(" ").append(v.getValue().getUserData().getMiddleName()).append(" ")
+                .append(v.getValue().getUserData().getLastName()).append("</p>");
+
+        stringBuilder.append("<p><button onClick=\"javascript:window" +
+                ".location='../denyEvent/" + v.getKey().getEventID() + "\">Отменить</button></p>");
+        stringBuilder.append("</div>");
+        return stringBuilder.toString();
     }
 }

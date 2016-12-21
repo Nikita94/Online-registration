@@ -13,9 +13,15 @@ public class Visit extends Event {
     private String diagnosis;
     private String patientID;
 
-    public Visit(String eventID, String doctorId, String patientId, String start, String end) {
-        super(eventID, doctorId, start, end);
+    public Visit(String eventID, String doctorId, String branchID, String patientId, String
+            start, String end) {
+        super(eventID, doctorId, branchID, start, end);
         this.patientID = patientId;
+    }
+
+    public Visit(Event event, String patientID) {
+        super(event);
+        this.patientID = patientID;
     }
 
     public void setMedicalDisposal(String disposal) {
@@ -26,12 +32,9 @@ public class Visit extends Event {
 
     }
 
-    public void setActualStartDate(String startDate) {
-
+    public String getPatientID() {
+        return patientID;
     }
 
-    public void setActualEndDate(String endDate) {
-
-    }
 
 }

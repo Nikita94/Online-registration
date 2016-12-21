@@ -4,6 +4,7 @@ package supermed.statisticsframework;
  * Created by Alexander on 14.12.2016.
  */
 public class Event {
+    private final String branchID;
     private String eventID;
     private String employeeID;
     private String expectedStartDate;
@@ -11,14 +12,29 @@ public class Event {
     private String actualStartDate;
     private String actualEndDate;
     private EventStatus status;
+    private EventTypes type;
 
-    public Event(String id, String employeeID, String start, String end) {
+    public Event(String id, String employeeID, String branchID, String start, String end) {
         this.eventID = id;
         this.employeeID = employeeID;
+        this.branchID = branchID;
         expectedStartDate = start;
         expectedEndDate = end;
         actualStartDate = start;
         actualEndDate = end;
+    }
+
+    public Event(Event event) {
+        this.eventID = event.getEventID();
+        this.employeeID = event.getEmployeeID();
+        this.branchID = event.getBranchID();
+        expectedStartDate = event.getExpectedStartDate();
+        expectedEndDate = event.getExpectedEndDate();
+        actualStartDate = event.getActualStartDate();
+        actualEndDate = event.getActualEndDate();
+        status = event.getStatus();
+
+
     }
 
     public void setActualStartDate(String startDate) {
@@ -83,5 +99,13 @@ public class Event {
 
     public EventStatus getStatus() {
         return status;
+    }
+
+    public String getBranchID() {
+        return branchID;
+    }
+
+    public void setStatus(EventTypes type) {
+        this.type = type;
     }
 }

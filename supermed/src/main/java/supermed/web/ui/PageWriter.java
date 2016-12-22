@@ -2,8 +2,9 @@ package supermed.web.ui;
 
 import supermed.consultancysystem.Visit;
 import supermed.datamanagementsystem.DataManager;
-import supermed.statisticsframework.Event;
-import supermed.statisticsframework.EventStatus;
+import supermed.datamanagementsystem.impl.DataManagerImpl;
+import supermed.statisticsframework.event.Event;
+import supermed.statisticsframework.event.EventStatus;
 import supermed.statisticsframework.Schedule;
 import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
@@ -19,7 +20,7 @@ import java.util.Map;
  */
 public class PageWriter {
 
-    DataManager dataManager = new DataManager();
+    DataManager dataManager = new DataManagerImpl();
 
     private static final String HEADING = "<html><head><meta name=\"viewport\" " +
             "content=\"width=device-width, initial-scale=1\">\n" +

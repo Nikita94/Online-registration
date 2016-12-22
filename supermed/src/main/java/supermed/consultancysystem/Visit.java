@@ -1,7 +1,6 @@
 package supermed.consultancysystem;
 
-import supermed.statisticsframework.Event;
-import supermed.statisticsframework.Schedule;
+import supermed.statisticsframework.event.Event;
 
 /**
  * Created by Alexander on 14.12.2016.

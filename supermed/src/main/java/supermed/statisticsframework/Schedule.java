@@ -1,5 +1,6 @@
 package supermed.statisticsframework;
 
+import supermed.statisticsframework.event.Event;
 import supermed.usermanagementsystem.user.Employee;
 
 import java.util.LinkedList;

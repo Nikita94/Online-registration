@@ -2,10 +2,12 @@ package supermed.web.rest;
 
 import supermed.consultancysystem.Visit;
 import supermed.datamanagementsystem.DataManager;
+import supermed.datamanagementsystem.impl.DataManagerImpl;
 import supermed.httpexception.ResourceNotFoundException;
 import supermed.httpexception.ResponseBuilderImpl;
-import supermed.statisticsframework.EventStatus;
+import supermed.statisticsframework.event.EventStatus;
 import supermed.usermanagementsystem.UserManager;
+import supermed.usermanagementsystem.impl.UserManagerImpl;
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
 import supermed.usermanagementsystem.user.UserData;
@@ -32,8 +34,8 @@ import static supermed.usermanagementsystem.user.Role.*;
 @Path("/")
 public class RestApplication extends Application {
 
-    UserManager userManager = new UserManager();
-    DataManager dataManager = new DataManager();
+    UserManager userManagerImpl = new UserManagerImpl();
+    DataManager dataManager = new DataManagerImpl();
     PageWriter pageWriter = new PageWriter();
     EmailSender emailSender = new EmailSender();
 
@@ -103,7 +105,7 @@ public class RestApplication extends Application {
                     .setLogin(email)
                     .build();
             User user = new User(userData, createRole(role));
-            String id = userManager.createUser(user, password);
+            String id = userManagerImpl.createUser(user, password);
             if (id.equals("")) {
                 return responseBuilder.respondWithStatusAndObject(Response.Status.BAD_REQUEST,
                         "Incorrect data");
@@ -134,7 +136,7 @@ public class RestApplication extends Application {
     public Response logIn(@FormParam("login") String login,
                           @FormParam("password") String password) throws
             ResourceNotFoundException, NamingException {
-        User user = userManager.logIn(login, password);
+        User user = userManagerImpl.logIn(login, password);
         java.net.URI location = null;
         if (user != null) {
             currentRequest.getSession().setAttribute("User", user);
@@ -202,10 +204,10 @@ public class RestApplication extends Application {
                                @FormParam("password") String password,
                                @FormParam("address") String address,
                                @FormParam("contact_phone") String contact_phone) {
-        User user = userManager.getUserById(id);
+        User user = userManagerImpl.getUserById(id);
         //User currentUser = (User) currentRequest.getAttribute("User");
         //if (user.getID().equals(currentUser.getID())) {
-        userManager.updateInfoAboutYourself(id, password, address, contact_phone);
+        userManagerImpl.updateInfoAboutYourself(id, password, address, contact_phone);
         emailSender.send("Изменение контактных данных",
                 "Ваши контактные данные были успешно изменены." +
                         "\n\n С уважением, команда Supermed", user.getUserData().getEmail());
@@ -228,9 +230,9 @@ public class RestApplication extends Application {
             User currentUser = (User) currentRequest.getSession().getAttribute("User");
             if (currentUser != null) {
                 if (currentUser.getRole() != PATIENT) {
-                    return pageWriter.printUserProfilePage(userManager.getUserById(id));
+                    return pageWriter.printUserProfilePage(userManagerImpl.getUserById(id));
                 } else if (currentUser.getID().equals(id)) {
-                    return pageWriter.printUserProfilePage(userManager.getUserById(id));
+                    return pageWriter.printUserProfilePage(userManagerImpl.getUserById(id));
                 }
             }
         } catch (Exception e) {
@@ -265,7 +267,7 @@ public class RestApplication extends Application {
     @Path("/update_yourself/{id}")
     @Produces(MediaType.TEXT_HTML)
     public String getEditForm(@PathParam("id") String id) {
-        User user = userManager.getUserById(id);
+        User user = userManagerImpl.getUserById(id);
         try {
             User currentUser = (User) currentRequest.getSession().getAttribute("User");
             if (currentUser != null) {
@@ -298,8 +300,9 @@ public class RestApplication extends Application {
                 emailSender.send("Запись на прием", "Добавлена новая заявка на прием от пациента "
                         + patient.getUserData().getLastName() + " " + patient.getUserData()
                         .getFirstName() + " " + patient.getUserData().getMiddleName() + "\n " +
-                        "Телефон: " + patient.getUserData().getPhoneNumber() + "\n" + "Email: "
+                        "Телефон: " + patient.getUserData().getPhoneNumber() + "\n" + "Электронная почта: "
                         + patient.getUserData().getEmail() + "\n", doctor.getUserData().getEmail());
+
                 java.net.URI location = new java.net.URI("./users/" + patient.getID());
                 return Response.seeOther(location).build();
 

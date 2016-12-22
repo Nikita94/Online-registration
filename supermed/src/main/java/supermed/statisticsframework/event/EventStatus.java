@@ -1,6 +1,4 @@
-package supermed.statisticsframework;
-
-import supermed.usermanagementsystem.user.Role;
+package supermed.statisticsframework.event;
 
 /**
  * Created by Alexander on 14.12.2016.

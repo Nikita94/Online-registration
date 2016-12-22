@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
-import supermed.datamanagementsystem.DataManager;
-import supermed.usermanagementsystem.UserManager;
+import supermed.datamanagementsystem.impl.DataManagerImpl;
+import supermed.usermanagementsystem.impl.UserManagerImpl;
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
 import supermed.usermanagementsystem.user.UserData;
@@ -34,8 +34,8 @@ import static org.mockito.Mockito.when;
 public class RestApplicationTest extends JerseyTest {
 
     RestApplication restApplication;
-    DataManager dataManager;
-    UserManager userManager;
+    DataManagerImpl dataManager;
+    UserManagerImpl userManager;
     HttpServletRequest currentRequest;
     User testUser = new User();
     HttpSession session;
@@ -67,16 +67,17 @@ public class RestApplicationTest extends JerseyTest {
         when(userManager.logIn("test", "test")).thenReturn(testUser);
         Response response = target("/login")
                 .register(RedirectTestFilter.class)
-                .request().post(entity(new Form().param("login", "test").param("password", "test"), MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+                .request().post(entity(new Form().param("login", "test").param("password",
+                        "test"), MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         collector.checkThat(response.getStatus(), equalTo(OK.getStatusCode()));
     }
 
     @Override
     protected Application configure() {
         this.restApplication = new RestApplication();
-        userManager = mock(UserManager.class);
+        userManager = mock(UserManagerImpl.class);
         currentRequest = mock(HttpServletRequest.class);
-        restApplication.userManager = this.userManager;
+        restApplication.userManagerImpl = this.userManager;
         return new ResourceConfig().register(new AbstractBinder() {
             @Override
             protected void configure() {
@@ -89,10 +90,12 @@ public class RestApplicationTest extends JerseyTest {
         public static final String RESOLVED_URI_HEADER = "resolved-uri";
 
         @Override
-        public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
+        public void filter(ClientRequestContext requestContext, ClientResponseContext
+                responseContext) throws IOException {
             if (responseContext instanceof ClientResponse) {
                 ClientResponse clientResponse = (ClientResponse) responseContext;
-                responseContext.getHeaders().putSingle(RESOLVED_URI_HEADER, clientResponse.getResolvedRequestUri().toString());
+                responseContext.getHeaders().putSingle(RESOLVED_URI_HEADER, clientResponse
+                        .getResolvedRequestUri().toString());
             }
         }
     }

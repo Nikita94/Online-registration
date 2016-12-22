@@ -4,6 +4,7 @@ package supermed.datamanagementsystem;
 import static org.junit.Assert.*;
 
 import org.junit.*;
+import supermed.datamanagementsystem.impl.DataManagerImpl;
 import supermed.usermanagementsystem.user.Employee;
 import supermed.usermanagementsystem.user.Role;
 import supermed.usermanagementsystem.user.User;
@@ -16,7 +17,7 @@ import java.util.Properties;
 
 
 public class DataManagerTest {
-    private DataManager dataManager = new DataManager();
+    private DataManagerImpl dataManager = new DataManagerImpl();
     private Connection connection;
     private Statement statement;
     private User user = new User();

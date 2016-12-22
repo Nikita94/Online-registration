@@ -1,7 +1,7 @@
 package supermed.statisticsframework;
 
 /**
- * Created by Alexander on 15.12.2016.
+ * Created by Alexander on 22.12.2016.
  */
-public class TimesheetManager {
+public interface TimesheetManager {
 }

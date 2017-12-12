@@ -1,10 +1,13 @@
 package supermed.usermanagementsystem.user;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import javax.jws.soap.SOAPBinding;
 
 /**
  * Created by Alexander on 11.12.2016.
  */
+@Document(collection="users")
 public class Employee extends User {
     private String hireDate;
     private String position;

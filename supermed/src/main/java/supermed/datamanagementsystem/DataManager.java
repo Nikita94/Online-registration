@@ -1,5 +1,6 @@
 package supermed.datamanagementsystem;
 
+import org.springframework.stereotype.Component;
 import supermed.consultancysystem.Visit;
 import supermed.statisticsframework.Schedule;
 import supermed.statisticsframework.event.EventStatus;
@@ -11,7 +12,9 @@ import java.util.Map;
 /**
  * Created by Alexander on 22.12.2016.
  */
+
 public interface DataManager {
+
     User getUserByLogin(String login);
 
     User logIn(String login, String password);

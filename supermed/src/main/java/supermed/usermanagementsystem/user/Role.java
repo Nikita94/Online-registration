@@ -1,10 +1,12 @@
 package supermed.usermanagementsystem.user;
 
 import com.fasterxml.jackson.databind.util.Named;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Created by Alexander on 23.11.2016.
  */
+@Document
 public enum Role implements Named{
     DOCTOR("doctor"),
     MANAGER("manager"),

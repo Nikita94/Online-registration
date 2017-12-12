@@ -1,5 +1,8 @@
 package supermed.usermanagementsystem.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import supermed.datamanagementsystem.DataManager;
 import supermed.datamanagementsystem.impl.DataManagerImpl;
 import supermed.usermanagementsystem.UserManager;
@@ -8,9 +11,11 @@ import supermed.usermanagementsystem.user.User;
 /**
  * Created by Alexander on 24.11.2016.
  */
+@Component
 public class UserManagerImpl implements UserManager {
 
-    DataManager dataManager = new DataManagerImpl();
+    @Autowired
+    DataManager dataManager;
 
     @Override
     public String createUser(User user, String password) {
@@ -47,7 +52,4 @@ public class UserManagerImpl implements UserManager {
         return param != null && (!param.equals(""));
     }
 
-    public void setDataManager(DataManagerImpl dataManager) {
-        this.dataManager = dataManager;
-    }
 }

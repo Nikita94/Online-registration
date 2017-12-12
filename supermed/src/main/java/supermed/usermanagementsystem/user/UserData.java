@@ -1,8 +1,10 @@
 package supermed.usermanagementsystem.user;
 
 
-import java.io.Serializable;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+@Document
 public class UserData implements Serializable {
 
     private String email;

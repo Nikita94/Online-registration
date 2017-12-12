@@ -1,6 +1,7 @@
 package supermed.usermanagementsystem.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.io.Serializable;
  */
 
 @XmlRootElement
+@Document(collection="users")
 public class User implements Serializable {
     @JsonProperty("user_role")
     private Role role;

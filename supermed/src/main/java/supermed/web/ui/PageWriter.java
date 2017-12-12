@@ -1,5 +1,7 @@
 package supermed.web.ui;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import supermed.consultancysystem.Visit;
 import supermed.datamanagementsystem.DataManager;
 import supermed.datamanagementsystem.impl.DataManagerImpl;
@@ -18,11 +20,13 @@ import java.util.Map;
 /**
  * Created by Alexander on 11.12.2016.
  */
+@Component
 public class PageWriter {
 
-    DataManager dataManager = new DataManagerImpl();
+    @Autowired
+    DataManager dataManager;
 
-    private static final String HEADING = "<html><head><meta name=\"viewport\" " +
+    private static final String HEADING = "<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" name=\"viewport\" " +
             "content=\"width=device-width, initial-scale=1\">\n" +
             "<link rel=\"stylesheet\" href=\"https://code.jquery.com/mobile/1.4.5/jquery" +
             ".mobile-1.4.5.min.css\">\n" +
@@ -329,29 +333,13 @@ public class PageWriter {
         return form;
     }
 
-    public static String printCreateUserPage() {
-        String createUser = "<!DOCTYPE html>\n" +
+    public static String printCreatePatient() {
+        String createPatient = "<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "<body>\n" +
                 "\n" +
                 "<form method=\"post\" action=\"\">\n" +
-                "  Имя:<br>\n" +
-                "  <input type=\"text\" name=\"first_name\" value=\"\">\n" +
-                "  <br>\n" +
-                "   Отчество:<br>\n" +
-                "  <input type=\"text\" name=\"middle_name\" value=\"\">\n" +
-                "  <br>Фамилия:<br>\n" +
-                "  <input type=\"text\" name=\"last_name\" value=\"\">\n" +
-                "  <br>Дата рождения:<br>\n" +
-                "  <input type=\"text\" name=\"birth_date\" value=\"\">\n" +
-                "  <br>Адрес:<br>\n" +
-                "  <input type=\"text\" name=\"address\" value=\"\">\n" +
-                "  <br>Телефон:<br>\n" +
-                "  <input type=\"text\" name=\"contact_phone\" value=\"\">\n" +
-                "  <br>Роль:<br>\n" +
-                "  <input type=\"text\" name=\"role\" value=\"\">\n" +
-                "  <br>E-mail:<br>\n" +
-                "  <input type=\"text\" name=\"email\" value=\"\">\n" +
+                printUserDataFormInput()+
                 "  <br>Пароль:<br>\n" +
                 "  <input type=\"text\" name=\"password\" value=\"\">\n" +
                 "  <br>\n" +
@@ -360,16 +348,11 @@ public class PageWriter {
                 "\n" +
                 "</body>\n" +
                 "</html>\n";
-        return createUser;
+        return createPatient;
     }
 
-    public static String printCreateEmployeePage() {
-        String createUser = "<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<body>\n" +
-                "\n" +
-                "<form method=\"post\" action=\"\">\n" +
-                "  Имя:<br>\n" +
+    private static String printUserDataFormInput(){
+        return  "  Имя:<br>\n" +
                 "  <input type=\"text\" name=\"first_name\" value=\"\">\n" +
                 "  <br>\n" +
                 "   Отчество:<br>\n" +
@@ -382,14 +365,24 @@ public class PageWriter {
                 "  <input type=\"text\" name=\"address\" value=\"\">\n" +
                 "  <br>Телефон:<br>\n" +
                 "  <input type=\"text\" name=\"contact_phone\" value=\"\">\n" +
+                "  <br>E-mail:<br>\n" +
+                "  <input type=\"text\" name=\"email\" value=\"\">\n";
+    }
+    public static String printCreateEmployeePage() {
+        String createUser = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<body>\n" +
+                "\n" +
+                "<form method=\"post\" action=\"\">\n" +
+                printUserDataFormInput() +
                 "  <br>Роль:<br>\n" +
                 "  <input type=\"text\" name=\"role\" value=\"\">\n" +
-                "  <br>E-mail:<br>\n" +
-                "  <input type=\"text\" name=\"email\" value=\"\">\n" +
-                "  <br>Позиция:<br>\n" +
+                "  <br>Должность:<br>\n" +
                 "  <input type=\"text\" name=\"position\" value=\"\">\n" +
-                "  <br>Отделении клиники:<br>\n" +
+                "  <br>Отделение клиники:<br>\n" +
                 "  <input type=\"text\" name=\"branch\" value=\"\">\n" +
+                "  <br>Дата найма:<br>\n" +
+                "  <input type=\"text\" name=\"hireDate\" value=\"\">\n" +
                 "  <br>Пароль:<br>\n" +
                 "  <input type=\"text\" name=\"password\" value=\"\">\n" +
                 "  <br>\n" +

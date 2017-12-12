@@ -26,10 +26,12 @@
         <welcome-file>login_page.html</welcome-file>
     </welcome-file-list>
     <distributable/>
-    <resource-ref>
-        <res-ref-name>jdbc/supermed</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-        <res-sharing-scope>Shareable</res-sharing-scope>
-    </resource-ref>
+    <context-param>
+        <param-name>MONGODB_HOST</param-name>
+        <param-value>localhost</param-value>
+    </context-param>
+    <context-param>
+        <param-name>MONGODB_PORT</param-name>
+        <param-value>27017</param-value>
+    </context-param>
 </web-app>
